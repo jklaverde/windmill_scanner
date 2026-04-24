@@ -93,7 +93,17 @@ export default function App() {
     <div className="flex flex-col h-screen overflow-hidden bg-gray-50">
       {/* Row 1: Title bar */}
       <header className="flex-none h-12 bg-slate-800 text-white flex items-center justify-between px-4 shrink-0">
-        <span className="text-sm font-semibold tracking-wide">Windmill Data Stream Simulator (IU)</span>
+        <div className="flex items-center gap-2.5">
+          {/* Wind turbine icon */}
+          <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M15.2 14.5 L14.2 27.5 H17.8 L16.8 14.5 Z" fill="#94a3b8"/>
+            <path d="M16 13 C14.6 11 14 8 16 4.5 C18 8 17.4 11 16 13Z" fill="white" transform="rotate(0   16 13)"/>
+            <path d="M16 13 C14.6 11 14 8 16 4.5 C18 8 17.4 11 16 13Z" fill="white" transform="rotate(120 16 13)"/>
+            <path d="M16 13 C14.6 11 14 8 16 4.5 C18 8 17.4 11 16 13Z" fill="white" transform="rotate(240 16 13)"/>
+            <circle cx="16" cy="13" r="2.2" fill="white"/>
+          </svg>
+          <span className="text-sm font-semibold tracking-wide">Wind Turbine Simulator (International University - IU)</span>
+        </div>
         <button
           onClick={() => setShowAbout(true)}
           className="text-xs text-slate-300 border border-slate-600 px-3 py-1 rounded hover:bg-slate-700 hover:text-white transition-colors"
