@@ -84,7 +84,7 @@ Row 1: App title bar (small, full width) — title text: "Windmill Data Stream S
 
 Row 2: Three equal-width panels side by side
 Left panel: Farm Management
-Scrollable list of all farms.
+Scrollable list of all farms, sorted alphabetically by name (A → Z).
 Clicking a farm selects it and loads its windmills in the middle panel.
 No farm is selected on initial load — middle panel shows a prompt.
 Farm row displays: Farm Name + Farm ID. Hovering shows the farm description.
@@ -92,8 +92,10 @@ Windmill counts shown at the bottom of the row with traffic-light icons:
   green icon = running_count, red icon = (windmill_count − running_count), plain number = total.
 Empty state (no farms exist): centred prompt "No farms yet. Click 'New Farm' to get started."
 Create form: toggled — a "New Farm" button reveals the creation form; hidden when not in use.
-Farm creation fields: name (required, text), description (required, text). Both must be
-non-empty before the form can be submitted.
+Farm creation fields:
+  name        required, max 60 characters
+  description required, max 100 characters
+Both must be non-empty before the form can be submitted.
 A fixed control bar at the BOTTOM of the left panel shows actions for the selected farm:
   Start All — starts all stopped windmills in the farm.
   Stop All  — stops all running windmills in the farm.
@@ -110,8 +112,11 @@ Deleting the selected farm deselects it: middle panel returns to "No farm select
                   tooltip: "Select a farm first."
                   When a farm is selected: button enabled; tooltip: "Move all the signal per
                   windmill in this farm from the database to parquet (archive) files."
+                  Windmill list sorted alphabetically by name (A → Z).
                   Windmill list row displays: name (primary label) + windmill_id (secondary, smaller)
                   + is_running status badge + sensor_beat (with unit) + location_beat (with unit).
+                  Beat values shown in compact notation: ss→s, mm→m, hh→h, dd→d
+                  (e.g., sensor_beat=5, unit=ss displays as "5s"; location_beat=1, unit=dd as "1d").
                   Clicking a windmill row selects it and activates both charts.
                   Clicking the already-selected windmill row is a no-op — nothing changes.
                   Farm change: clicking a different farm automatically deselects the current windmill
@@ -147,6 +152,8 @@ Deleting the selected farm deselects it: middle panel returns to "No farm select
 
     Right panel:  Parquet File Manager
                   List of all .parquet files (name, size, last modified, in-use status).
+                  size_bytes displayed in human-readable form (KB / MB).
+                  modified_at displayed as UTC datetime.
                   Delete button per file (blocked if in-use, no confirmation dialog).
                   Empty state (no files yet): centred prompt
                   "No archive files yet. Run ETL on a windmill to generate one."
@@ -159,7 +166,7 @@ While wsStatus = "connecting": empty chart (axes visible, no lines) with a loadi
 and a "Connecting…" label overlay.
 Four coloured lines (temperature, noise_level, humidity, wind_speed) on a single shared y-axis.
 Legend identifies each line.
-X-axis: measurement_timestamp displayed as clock time (HH:MM:SS). Time advances left to right.
+X-axis: measurement_timestamp displayed as UTC clock time (HH:MM:SS). Time advances left to right.
 Rolling window: last 100 readings; oldest entries dropped beyond that.
 Y-axis mode: user-selectable combobox with three options (see Y-axis Mode section below).
 When windmill is stopped: chart lines turn grey/muted + an overlay badge reads "Stream Stopped".
@@ -176,11 +183,15 @@ When running: normal coloured lines.
                   time range" placeholder).
                   Four lines (temperature, noise_level, humidity, wind_speed) on a shared y-axis.
                   Y-axis mode: user-selectable combobox (see Y-axis Mode section below).
-                  X-axis: scale-adaptive timestamp format:
+                  X-axis: scale-adaptive UTC timestamp format:
                     minute / hour → HH:MM:SS
                     day           → HH:MM
                     week          → MMM DD HH:MM  (e.g., "Apr 24 14:32")
+                  All times displayed in UTC — no local timezone conversion.
                   Time-scale control re-fetches and re-renders on change.
+                  Scale selection persists across windmill changes — if the user was on "day"
+                  and selects a different windmill, the History chart loads on "day" for the
+                  new windmill (does not reset to "minute").
                   Unaffected by windmill running state.
                   When ETL has run but the selected time window contains 0 data points:
                   shows "No data available for this time range" — same placeholder used
@@ -192,7 +203,7 @@ Updates in real time via SSE (entries appended as they arrive).
 Manual refresh button re-fetches the full list via REST.
 Clear button empties the Zustand notification store (frontend only — does not delete the log file).
 Frontend cap: 500 entries. Oldest entries are dropped when the store exceeds 500.
-Each row displays: timestamp (HH:MM:SS) + " — " + message.
+Each row displays: timestamp (HH:MM:SS UTC) + " — " + message.
 If the message does not fit the row width, it is truncated; hovering shows the full entry
 (all fields: timestamp, level, entity_type, entity_id, message) in a tooltip.
 Visual distinction: info entries use normal text; error entries use a soft red tint
@@ -230,6 +241,7 @@ List endpoints return all fields of each object.
 
 GET /farms
 Response: [ { id, name, description, windmill_count, running_count, created_at }, ... ]
+Sorted: alphabetically by name ASC.
 
 POST /farms { name, description }
 Response 201: { id, name, description, windmill_count: 0, running_count: 0, created_at }
@@ -240,6 +252,7 @@ Response 204. BLOCKED (409) if windmill_count > 0.
 ### Windmills
 
 GET /farms/{farm_id}/windmills
+Sorted: alphabetically by name ASC.
 Response: [ { id, windmill_id, name, description, farm_id, is_running,
               sensor_beat, sensor_beat_unit, location_beat, location_beat_unit,
               lat, lat_dir, lon, lon_dir,
@@ -357,8 +370,9 @@ Strategy: per-bucket representative sampling (spike-preserving downsampling).
 Chosen because: it preserves spikes (which plain averaging would lose), produces a fixed
 output size (up to 200 points) regardless of data volume, and is simple to implement with pandas.
 
-Default scale on windmill selection: minute.
-All scales read from Parquet. ETL must have been run for any scale to show data.
+Default scale on initial app load: minute. Scale persists in Zustand (historyScale) and is
+retained when the user selects a different windmill. All scales read from Parquet.
+ETL must have been run for any scale to show data.
 
 Time windows (applied from "now" backward):
 minute = last 1 minute — returns raw Parquet rows, no sampling (skip steps 2–3; filter and return directly)
@@ -631,8 +645,10 @@ sensor_beat   Integer, min 1. Max depends on unit (enforced in form live + backe
               ss → max 86400 | mm → max 1440 | hh → max 24 | dd → max 1
               Total duration must be ≥ 1 second and ≤ 86400 seconds (1 day).
 sensor_beat_unit Select: ss | mm | hh | dd
+              Dropdown display labels: Seconds | Minutes | Hours | Days
 location_beat Integer, min 1. Same dynamic max rules as sensor_beat.
 location_beat_unit Select: ss | mm | hh | dd
+              Dropdown display labels: Seconds | Minutes | Hours | Days
 lat           Decimal, range −90 to 90 (required)
 lat_dir       Select: N | S
 lon           Decimal, range −180 to 180 (required)
@@ -675,8 +691,11 @@ All editable fields (description, beats, coordinates, ranges, rates) can be upda
 ### Form error handling
 Validation errors (client-side and API) are shown inline — a red message directly below
 the offending field. No toast is shown for form validation failures (422) or conflict errors (409).
-Form mutations must suppress the global axios toast interceptor (e.g., via a per-request flag
-such as { skipGlobalErrorHandler: true }) so the interceptor does not also fire a toast.
+Form mutations suppress the global axios toast interceptor for 422 and 409 responses
+(e.g., via a per-request flag such as { skipGlobalErrorHandler: true }).
+Unexpected server errors (500): the interceptor suppression does NOT apply — a toast fires
+with as much detail as possible from the server's error response. The form itself does not
+show an inline error for 500s (no field to target).
 The global toast interceptor remains active for all non-form API calls.
 
 Uniqueness conflict (409) dual reporting:
@@ -694,8 +713,8 @@ Uniqueness conflict (409) dual reporting:
 ### farms
 
 id SERIAL PRIMARY KEY
-name VARCHAR(255) UNIQUE NOT NULL
-description TEXT NOT NULL DEFAULT ''
+name VARCHAR(60) UNIQUE NOT NULL
+description VARCHAR(100) NOT NULL DEFAULT ''
 created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 
 ### windmills
@@ -812,6 +831,7 @@ modalState: { type: "deleteFarm" | "deleteWindmill", payload: { id: string | num
 wasRunningBeforeEdit: boolean — set true when edit mode stops a running windmill; cleared on exit
 signalsYAxisMode: "auto" | "normalize" | "fixed" — default "auto"; controls Signals chart y-axis
 historyYAxisMode: "auto" | "normalize" | "fixed" — default "auto"; controls History chart y-axis
+historyScale: "minute" | "hour" | "day" | "week" — default "minute"; persists across windmill changes
 
 ---
 
