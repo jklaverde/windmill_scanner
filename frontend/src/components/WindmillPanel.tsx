@@ -62,7 +62,7 @@ export default function WindmillPanel() {
   const {
     selectedFarmId, selectedWindmillId, selectWindmill,
     openModal, closeModal, modalState,
-    setIsCreatingWindmill, wasRunningBeforeEdit, setWasRunningBeforeEdit,
+    wasRunningBeforeEdit, setWasRunningBeforeEdit,
   } = useStore();
 
   const [mode, setMode] = useState<PanelMode>("list");
@@ -128,11 +128,9 @@ export default function WindmillPanel() {
 
   const openCreate = () => {
     setMode("create");
-    setIsCreatingWindmill(true);
   };
   const closeCreate = () => {
     setMode("list");
-    setIsCreatingWindmill(false);
   };
 
   const openEdit = () => {

@@ -6,7 +6,7 @@
  * Row 3: two charts (~35% of remaining)
  * Row 4: notifications (remainder)
  */
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useStore } from "./store/useStore";
 import { NotificationSSE } from "./infra/sse";
@@ -14,6 +14,7 @@ import { WindmillWebSocket } from "./infra/ws";
 import api from "./infra/api";
 import type { WsMessage, SensorReading, NotificationEntry } from "./domain/types";
 
+import AboutModal from "./components/AboutModal";
 import FarmPanel from "./components/FarmPanel";
 import WindmillPanel from "./components/WindmillPanel";
 import ParquetPanel from "./components/ParquetPanel";
@@ -22,9 +23,9 @@ import HistoryChart from "./components/HistoryChart";
 import NotificationsPanel from "./components/NotificationsPanel";
 
 export default function App() {
+  const [showAbout, setShowAbout] = useState(false);
   const {
     selectedWindmillId,
-    isCreatingWindmill,
     pushReading,
     setWsStatus,
     seedNotifications,
@@ -88,25 +89,30 @@ export default function App() {
     }
   }, [selectedWindmillId]);
 
-  // Collapse side panels while creating a windmill
-  const sidePanelClass = isCreatingWindmill ? "hidden" : "flex-1 min-w-0";
-
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-gray-50">
       {/* Row 1: Title bar */}
-      <header className="flex-none h-12 bg-slate-800 text-white flex items-center px-4 text-sm font-semibold tracking-wide shrink-0">
-        Windmill Data Stream Simulator (IU)
+      <header className="flex-none h-12 bg-slate-800 text-white flex items-center justify-between px-4 shrink-0">
+        <span className="text-sm font-semibold tracking-wide">Windmill Data Stream Simulator (IU)</span>
+        <button
+          onClick={() => setShowAbout(true)}
+          className="text-xs text-slate-300 border border-slate-600 px-3 py-1 rounded hover:bg-slate-700 hover:text-white transition-colors"
+        >
+          About
+        </button>
       </header>
+
+      {showAbout && <AboutModal onClose={() => setShowAbout(false)} />}
 
       {/* Row 2: Three panels */}
       <div className="flex min-h-0 border-b border-gray-200" style={{ flex: "35 0 0" }}>
-        <div className={`${sidePanelClass} border-r border-gray-200`}>
+        <div className="flex-1 min-w-0 border-r border-gray-200">
           <FarmPanel />
         </div>
         <div className="flex-1 min-w-0">
           <WindmillPanel />
         </div>
-        <div className={`${sidePanelClass} border-l border-gray-200`}>
+        <div className="flex-1 min-w-0 border-l border-gray-200">
           <ParquetPanel />
         </div>
       </div>

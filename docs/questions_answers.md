@@ -1,31 +1,46 @@
-Q73 — WS broadcast error handling: what happens when send_json raises on a broken connection?
+Refactor 1 — Panel hiding
 
-When the stop route iterates active_connections[windmill_id] and calls await ws.send_json(payload) on each entry, one or more of those sockets may already be half-closed
-(client tab crashed, network drop, etc.). In that case send_json raises a WebSocketDisconnect or ConnectionClosedError.
+Root cause: App.tsx:92 sets sidePanelClass = isCreatingWindmill ? "hidden" : "flex-1 min-w-0" and applies it to the Farm and Parquet panels. Removing the toggle is a 3-line change in App.tsx.
 
-Two options:
+Question: isCreatingWindmill in the store and its setter calls in WindmillPanel.tsx become dead code after this. Should I remove them entirely from the store, or leave them (harmless but unused)?
 
-(a) Catch silently, remove the broken entry
+A:/ The implementation is not about hidding the list of windmills, is about the other windows "Farm management" and "Parquet Files" that are hidden while windmills is being
+created/edited.
 
-for ws in list(active_connections.get(windmill_id, [])):
-try:
-await ws.send_json(payload)
-except Exception:
-active_connections[windmill_id].remove(ws)
+---
 
-The broadcast continues to all remaining connections. The broken entry is cleaned up opportunistically here rather than waiting for the disconnect handler to fire.
+Refactor 2 — Sensor configuration
 
-(b) Let it raise — the disconnect handler is sufficient
+Bug root cause (crash): The f() handler in both CreateWindmillForm.tsx:78 and EditWindmillForm.tsx:85 converts to Number only when e.target.type === "number". A <input type="range"> has type "range", so the value stays
+a string. On re-render, .toFixed() is called on a string → crash. Fix: add || e.target.type === "range" to the condition.
 
-The WS handler already removes entries from active_connections on disconnect. If the client is truly gone, the TCP close will trigger the disconnect handler and remove
-it. The stop route makes a best-effort broadcast and does not handle exceptions.
+Concept design questions:
 
-- Pro: simpler stop route.
-- Con: a half-open socket (TCP keepalive not yet fired) can cause the broadcast to raise mid-loop, skipping all remaining connections.
+The 4 fields per sensor currently have these labels: Clamp Min | Normal Min | Normal Max | Spike Max. The refactor wants "universe" vs "simulation interval" to be clear. Here are layout options:
 
-Recommendation: (a) — the silent-catch-and-remove is three lines and prevents a broken socket from aborting the broadcast to all remaining connected clients. The
-overhead is negligible.
+Option A — Two rows with group headers:
+── Physical bounds ──────────────────
+Physical Min [ 0 ] Physical Max [ 200 ]
+── Simulation interval ──────────────
+From [ 35 ] To [ 45 ]
+── Variation ────────────────────────
+Max step ±2.0% per beat [====●====]
 
-Which do you choose: (a) or (b)?
+Option B — Single row, renamed labels only:
+Floor | Sim Min | Sim Max | Ceiling
+[ 0 ] | [ 35 ] | [ 45 ] | [ 200 ]
+Max step ±2.0% per beat [====●====]
 
-A:/ (a)
+Option C — Keep the 4-column grid, just rename: Min (floor) | Range from | Range to | Max (spike).
+
+Three more questions:
+
+1. Which layout option (A, B, or C — or something else)?
+   A:/ B
+
+2. Should the rate label become ±X% per beat to make bidirectionality explicit?
+   A:/ Sure
+
+3. Should Refactor 2 also apply to EditWindmillForm? (It has the same crash bug.)
+
+A:/ Yes.

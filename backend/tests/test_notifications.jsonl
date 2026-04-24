@@ -1,0 +1,246 @@
+{"timestamp": "2026-04-24T17:19:25.032852Z", "level": "info", "message": "Farm 'Alpha Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:19:25.080217Z", "level": "info", "message": "Farm 'Bravo Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:19:25.092886Z", "level": "error", "message": "Farm name 'Bravo Farm' already exists \u2014 creation failed.", "entity_type": "farm", "entity_id": null}
+{"timestamp": "2026-04-24T17:19:25.137354Z", "level": "info", "message": "Farm 'Charlie Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:19:25.155549Z", "level": "info", "message": "Farm 'Alpha Farm' created.", "entity_type": "farm", "entity_id": "2"}
+{"timestamp": "2026-04-24T17:19:25.221865Z", "level": "info", "message": "Farm 'Zulu Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:19:25.238948Z", "level": "info", "message": "Farm 'Alpha Farm' created.", "entity_type": "farm", "entity_id": "2"}
+{"timestamp": "2026-04-24T17:19:25.298217Z", "level": "info", "message": "Farm 'Delta Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:19:25.332467Z", "level": "info", "message": "Farm 'Delta Farm' deleted.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:19:25.414953Z", "level": "info", "message": "Farm 'Echo Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:19:25.448698Z", "level": "info", "message": "Windmill 'wm-echo-1' created.", "entity_type": "windmill", "entity_id": "wm-echo-1"}
+{"timestamp": "2026-04-24T17:19:25.502909Z", "level": "info", "message": "Farm 'Foxtrot Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:19:25.518853Z", "level": "info", "message": "Farm 'Foxtrot Farm' deleted.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:19:25.575497Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:19:25.694496Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:19:25.717892Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T17:19:25.784248Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:19:25.810224Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T17:19:25.827205Z", "level": "error", "message": "Windmill ID 'wm-test-1' already exists \u2014 creation failed.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T17:19:25.873535Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:19:25.964922Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:19:25.983801Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T17:19:26.036140Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:19:26.053715Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T17:19:26.143667Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:19:26.161991Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T17:19:26.262856Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:19:26.282953Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T17:19:26.302706Z", "level": "info", "message": "Windmill 'wm-test-1' deleted.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T17:19:26.380692Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:19:26.399641Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T17:19:26.474792Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:19:26.494016Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T17:19:26.598545Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:19:26.618979Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T17:19:26.698668Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:19:26.719657Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T17:19:26.851954Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:19:26.871913Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T17:19:26.931416Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:19:26.951034Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T17:25:26.410985Z", "level": "info", "message": "Farm 'Alpha Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:25:26.461161Z", "level": "info", "message": "Farm 'Bravo Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:25:26.473563Z", "level": "error", "message": "Farm name 'Bravo Farm' already exists \u2014 creation failed.", "entity_type": "farm", "entity_id": null}
+{"timestamp": "2026-04-24T17:25:26.523627Z", "level": "info", "message": "Farm 'Charlie Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:25:26.540771Z", "level": "info", "message": "Farm 'Alpha Farm' created.", "entity_type": "farm", "entity_id": "2"}
+{"timestamp": "2026-04-24T17:25:26.615741Z", "level": "info", "message": "Farm 'Zulu Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:25:26.631235Z", "level": "info", "message": "Farm 'Alpha Farm' created.", "entity_type": "farm", "entity_id": "2"}
+{"timestamp": "2026-04-24T17:25:26.796782Z", "level": "info", "message": "Farm 'Delta Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:25:26.832802Z", "level": "info", "message": "Farm 'Delta Farm' deleted.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:25:26.924263Z", "level": "info", "message": "Farm 'Echo Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:25:26.962632Z", "level": "info", "message": "Windmill 'wm-echo-1' created.", "entity_type": "windmill", "entity_id": "wm-echo-1"}
+{"timestamp": "2026-04-24T17:25:27.022892Z", "level": "info", "message": "Farm 'Foxtrot Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:25:27.039533Z", "level": "info", "message": "Farm 'Foxtrot Farm' deleted.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:25:27.093653Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:25:27.213195Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:25:27.244068Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T17:25:27.309463Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:25:27.333645Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T17:25:27.348698Z", "level": "error", "message": "Windmill ID 'wm-test-1' already exists \u2014 creation failed.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T17:25:27.397895Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:25:27.508516Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:25:27.529086Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T17:25:27.596994Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:25:27.617627Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T17:25:27.732054Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:25:27.754643Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T17:25:27.867479Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:25:27.890058Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T17:25:27.910130Z", "level": "info", "message": "Windmill 'wm-test-1' deleted.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T17:25:28.001927Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:25:28.026834Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T17:25:28.106850Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:25:28.129826Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T17:25:28.274704Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:25:28.302479Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T17:25:28.410559Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:25:28.445677Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T17:25:28.697035Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:25:28.729963Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T17:25:28.814211Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T17:25:28.836718Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T18:37:13.404849Z", "level": "info", "message": "Farm 'Alpha Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:37:13.468383Z", "level": "info", "message": "Farm 'Bravo Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:37:13.483193Z", "level": "error", "message": "Farm name 'Bravo Farm' already exists \u2014 creation failed.", "entity_type": "farm", "entity_id": null}
+{"timestamp": "2026-04-24T18:37:13.536293Z", "level": "info", "message": "Farm 'Charlie Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:37:13.559157Z", "level": "info", "message": "Farm 'Alpha Farm' created.", "entity_type": "farm", "entity_id": "2"}
+{"timestamp": "2026-04-24T18:37:13.652325Z", "level": "info", "message": "Farm 'Zulu Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:37:13.671527Z", "level": "info", "message": "Farm 'Alpha Farm' created.", "entity_type": "farm", "entity_id": "2"}
+{"timestamp": "2026-04-24T18:37:13.742836Z", "level": "info", "message": "Farm 'Delta Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:37:13.779543Z", "level": "info", "message": "Farm 'Delta Farm' deleted.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:37:13.862616Z", "level": "info", "message": "Farm 'Echo Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:37:13.905359Z", "level": "info", "message": "Windmill 'wm-echo-1' created.", "entity_type": "windmill", "entity_id": "wm-echo-1"}
+{"timestamp": "2026-04-24T18:37:13.972398Z", "level": "info", "message": "Farm 'Foxtrot Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:37:13.988928Z", "level": "info", "message": "Farm 'Foxtrot Farm' deleted.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:37:14.042616Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:37:14.145892Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:37:14.171561Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T18:37:14.233653Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:37:14.259153Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T18:37:14.277289Z", "level": "error", "message": "Windmill ID 'wm-test-1' already exists \u2014 creation failed.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T18:37:14.321050Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:37:14.424293Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:37:14.453027Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T18:37:14.529306Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:37:14.557696Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T18:37:14.683481Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:37:14.707100Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T18:37:14.823253Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:37:14.858115Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T18:37:14.883446Z", "level": "info", "message": "Windmill 'wm-test-1' deleted.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T18:37:14.992045Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:37:15.016571Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T18:37:15.097834Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:37:15.117653Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T18:37:15.250685Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:37:15.283043Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T18:37:15.374714Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:37:15.396417Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T18:37:15.545007Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:37:15.562979Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T18:37:15.620059Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:37:15.638605Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T18:50:18.259156Z", "level": "info", "message": "Farm 'Alpha Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:50:18.312511Z", "level": "info", "message": "Farm 'Bravo Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:50:18.325362Z", "level": "error", "message": "Farm name 'Bravo Farm' already exists \u2014 creation failed.", "entity_type": "farm", "entity_id": null}
+{"timestamp": "2026-04-24T18:50:18.370685Z", "level": "info", "message": "Farm 'Charlie Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:50:18.389570Z", "level": "info", "message": "Farm 'Alpha Farm' created.", "entity_type": "farm", "entity_id": "2"}
+{"timestamp": "2026-04-24T18:50:18.455733Z", "level": "info", "message": "Farm 'Zulu Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:50:18.471145Z", "level": "info", "message": "Farm 'Alpha Farm' created.", "entity_type": "farm", "entity_id": "2"}
+{"timestamp": "2026-04-24T18:50:18.539993Z", "level": "info", "message": "Farm 'Delta Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:50:18.584674Z", "level": "info", "message": "Farm 'Delta Farm' deleted.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:50:18.670610Z", "level": "info", "message": "Farm 'Echo Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:50:18.709545Z", "level": "info", "message": "Windmill 'wm-echo-1' created.", "entity_type": "windmill", "entity_id": "wm-echo-1"}
+{"timestamp": "2026-04-24T18:50:18.768682Z", "level": "info", "message": "Farm 'Foxtrot Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:50:18.785423Z", "level": "info", "message": "Farm 'Foxtrot Farm' deleted.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:50:18.839904Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:50:18.943536Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:50:18.962624Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T18:50:19.010310Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:50:19.033529Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T18:50:19.050158Z", "level": "error", "message": "Windmill ID 'wm-test-1' already exists \u2014 creation failed.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T18:50:19.100402Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:50:19.193368Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:50:19.215616Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T18:50:19.275856Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:50:19.293552Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T18:50:19.393231Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:50:19.414614Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T18:50:19.522004Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:50:19.542046Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T18:50:19.560688Z", "level": "info", "message": "Windmill 'wm-test-1' deleted.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T18:50:19.641246Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:50:19.663090Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T18:50:19.736802Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:50:19.755132Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T18:50:19.850926Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:50:19.870320Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T18:50:19.944303Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:50:19.965497Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T18:50:20.109581Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:50:20.133402Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T18:50:20.190860Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T18:50:20.210606Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T19:48:58.114122Z", "level": "info", "message": "Farm 'Alpha Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T19:48:58.167451Z", "level": "info", "message": "Farm 'Bravo Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T19:48:58.182433Z", "level": "error", "message": "Farm name 'Bravo Farm' already exists \u2014 creation failed.", "entity_type": "farm", "entity_id": null}
+{"timestamp": "2026-04-24T19:48:58.233721Z", "level": "info", "message": "Farm 'Charlie Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T19:48:58.256426Z", "level": "info", "message": "Farm 'Alpha Farm' created.", "entity_type": "farm", "entity_id": "2"}
+{"timestamp": "2026-04-24T19:48:58.338480Z", "level": "info", "message": "Farm 'Zulu Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T19:48:58.356598Z", "level": "info", "message": "Farm 'Alpha Farm' created.", "entity_type": "farm", "entity_id": "2"}
+{"timestamp": "2026-04-24T19:48:58.416844Z", "level": "info", "message": "Farm 'Delta Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T19:48:58.452989Z", "level": "info", "message": "Farm 'Delta Farm' deleted.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T19:48:58.535630Z", "level": "info", "message": "Farm 'Echo Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T19:48:58.575570Z", "level": "info", "message": "Windmill 'wm-echo-1' created.", "entity_type": "windmill", "entity_id": "wm-echo-1"}
+{"timestamp": "2026-04-24T19:48:58.645527Z", "level": "info", "message": "Farm 'Foxtrot Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T19:48:58.670499Z", "level": "info", "message": "Farm 'Foxtrot Farm' deleted.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T19:48:58.745119Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T19:48:58.864719Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T19:48:58.888977Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T19:48:58.942840Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T19:48:58.966779Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T19:48:58.985908Z", "level": "error", "message": "Windmill ID 'wm-test-1' already exists \u2014 creation failed.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T19:48:59.034309Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T19:48:59.127411Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T19:48:59.146774Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T19:48:59.210799Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T19:48:59.231985Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T19:48:59.337175Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T19:48:59.357219Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T19:48:59.466779Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T19:48:59.486103Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T19:48:59.508112Z", "level": "info", "message": "Windmill 'wm-test-1' deleted.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T19:48:59.590231Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T19:48:59.612083Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T19:48:59.695520Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T19:48:59.716697Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T19:48:59.825183Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T19:48:59.847549Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T19:48:59.969144Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T19:49:00.001437Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T19:49:00.189393Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T19:49:00.219106Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T19:49:00.284969Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T19:49:00.302929Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T20:48:23.562526Z", "level": "info", "message": "Farm 'Alpha Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T20:48:23.619881Z", "level": "info", "message": "Farm 'Bravo Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T20:48:23.637243Z", "level": "error", "message": "Farm name 'Bravo Farm' already exists \u2014 creation failed.", "entity_type": "farm", "entity_id": null}
+{"timestamp": "2026-04-24T20:48:23.693705Z", "level": "info", "message": "Farm 'Charlie Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T20:48:23.712083Z", "level": "info", "message": "Farm 'Alpha Farm' created.", "entity_type": "farm", "entity_id": "2"}
+{"timestamp": "2026-04-24T20:48:23.792219Z", "level": "info", "message": "Farm 'Zulu Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T20:48:23.811441Z", "level": "info", "message": "Farm 'Alpha Farm' created.", "entity_type": "farm", "entity_id": "2"}
+{"timestamp": "2026-04-24T20:48:23.983717Z", "level": "info", "message": "Farm 'Delta Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T20:48:24.021435Z", "level": "info", "message": "Farm 'Delta Farm' deleted.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T20:48:24.102168Z", "level": "info", "message": "Farm 'Echo Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T20:48:24.137866Z", "level": "info", "message": "Windmill 'wm-echo-1' created.", "entity_type": "windmill", "entity_id": "wm-echo-1"}
+{"timestamp": "2026-04-24T20:48:24.199623Z", "level": "info", "message": "Farm 'Foxtrot Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T20:48:24.217621Z", "level": "info", "message": "Farm 'Foxtrot Farm' deleted.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T20:48:24.269941Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T20:48:24.374607Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T20:48:24.395469Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T20:48:24.443048Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T20:48:24.461325Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T20:48:24.474872Z", "level": "error", "message": "Windmill ID 'wm-test-1' already exists \u2014 creation failed.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T20:48:24.516626Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T20:48:24.607459Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T20:48:24.626656Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T20:48:24.694518Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T20:48:24.712468Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T20:48:24.807486Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T20:48:24.827868Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T20:48:24.931596Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T20:48:24.952767Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T20:48:24.975361Z", "level": "info", "message": "Windmill 'wm-test-1' deleted.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T20:48:25.058856Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T20:48:25.079297Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T20:48:25.158873Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T20:48:25.185102Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T20:48:25.294419Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T20:48:25.316230Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T20:48:25.406951Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T20:48:25.426479Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T20:48:25.557829Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T20:48:25.578430Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}
+{"timestamp": "2026-04-24T20:48:25.634169Z", "level": "info", "message": "Farm 'Test Farm' created.", "entity_type": "farm", "entity_id": "1"}
+{"timestamp": "2026-04-24T20:48:25.653179Z", "level": "info", "message": "Windmill 'wm-test-1' created.", "entity_type": "windmill", "entity_id": "wm-test-1"}

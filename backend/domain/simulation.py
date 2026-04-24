@@ -1,43 +1,44 @@
-"""Sensor value generation algorithm: bounded random walk with spike injection."""
+"""Sensor value generation: mean-reverting bounded random walk within the normal range."""
 import random
 from dataclasses import dataclass
 
 
 @dataclass
 class SensorConfig:
-    """Per-sensor range and rate configuration."""
-    clamp_min: float
-    normal_min: float
-    normal_max: float
-    spike_max: float
-    rate: float  # max delta as percent of normal_range (0.0–10.0)
+    clamp_min: float   # UI floor constraint — not used in simulation math
+    normal_min: float  # simulation lower bound
+    normal_max: float  # simulation upper bound
+    spike_max: float   # UI ceiling constraint — not used in simulation math
+    rate: float        # max delta as percent of normal_range (0.0–10.0)
 
 
 def initial_seed(config: SensorConfig) -> float:
-    """Return the midpoint of the normal range as the starting value."""
-    return (config.normal_min + config.normal_max) / 2.0
+    """Return a random starting value within the normal range."""
+    return random.uniform(config.normal_min, config.normal_max)
+
+
+_REVERSION_STRENGTH = 0.10  # 10% of the gap to midpoint closed each step
 
 
 def generate_value(current: float, config: SensorConfig) -> float:
     """
-    Produce the next sensor value using a bounded random walk.
+    Produce the next sensor value using a mean-reverting random walk.
 
-    ~5% chance of spike injection near spike_max.
-    Otherwise: apply random delta in [-rate% * normal_range, +rate% * normal_range].
-    Result is always clamped to [clamp_min, spike_max].
+    Delta: ± (rate% × normal_range), randomly drawn each beat.
+    Reversion: 10% pull toward the midpoint to prevent drift to the boundaries.
+    Result is clamped to [normal_min, normal_max].
+
+    clamp_min and spike_max are UI-only constraints and play no part here.
     """
     normal_range = config.normal_max - config.normal_min
+    midpoint = (config.normal_min + config.normal_max) / 2.0
 
-    if random.random() < 0.05:
-        # Spike: jump near spike_max ± 10% of normal_range
-        deviation = 0.1 * normal_range
-        value = config.spike_max + random.uniform(-deviation, deviation)
-    else:
-        max_delta = (config.rate / 100.0) * normal_range
-        delta = random.uniform(-max_delta, max_delta)
-        value = current + delta
+    max_delta = (config.rate / 100.0) * normal_range
+    delta = random.uniform(-max_delta, max_delta)
+    reversion = _REVERSION_STRENGTH * (midpoint - current)
+    value = current + delta + reversion
 
-    return max(config.clamp_min, min(config.spike_max, value))
+    return max(config.normal_min, min(config.normal_max, value))
 
 
 def configs_from_windmill(wm) -> dict[str, SensorConfig]:

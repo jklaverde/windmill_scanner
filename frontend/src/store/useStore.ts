@@ -30,8 +30,7 @@ interface StoreState {
   // Modal
   modalState: ModalState;
 
-  // Creation / edit flow
-  isCreatingWindmill: boolean;
+  // Edit flow
   wasRunningBeforeEdit: boolean;
 
   // Chart configuration
@@ -51,7 +50,6 @@ interface StoreState {
   setSseConnected: (connected: boolean) => void;
   openModal: (state: ModalState) => void;
   closeModal: () => void;
-  setIsCreatingWindmill: (v: boolean) => void;
   setWasRunningBeforeEdit: (v: boolean) => void;
   setSignalsYAxisMode: (mode: YAxisMode) => void;
   setHistoryYAxisMode: (mode: YAxisMode) => void;
@@ -66,20 +64,17 @@ export const useStore = create<StoreState>((set) => ({
   notifications: [],
   sseConnected: false,
   modalState: null,
-  isCreatingWindmill: false,
   wasRunningBeforeEdit: false,
   signalsYAxisMode: "auto",
   historyYAxisMode: "auto",
   historyScale: "minute",
 
   selectFarm: (id) =>
-    set((s) => ({
+    set(() => ({
       selectedFarmId: id,
-      // Deselect windmill when farm changes
       selectedWindmillId: null,
       signalsBuffer: [],
       wsStatus: "idle",
-      isCreatingWindmill: false,
     })),
 
   selectWindmill: (id) =>
@@ -114,8 +109,6 @@ export const useStore = create<StoreState>((set) => ({
   openModal: (state) => set({ modalState: state }),
 
   closeModal: () => set({ modalState: null }),
-
-  setIsCreatingWindmill: (v) => set({ isCreatingWindmill: v }),
 
   setWasRunningBeforeEdit: (v) => set({ wasRunningBeforeEdit: v }),
 

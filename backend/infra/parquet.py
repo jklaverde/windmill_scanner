@@ -192,10 +192,24 @@ def list_files(windmill_ids_running: set[str]) -> list[dict]:
         path = os.path.join(data_path, fname)
         stat = os.stat(path)
         windmill_id = fname[:-8]  # strip ".parquet"
+
+        first_timestamp: str | None = None
+        last_timestamp: str | None = None
+        try:
+            ts = pd.read_parquet(path, columns=["measurement_timestamp"])["measurement_timestamp"]
+            if len(ts) > 0:
+                ts = pd.to_datetime(ts, utc=True)
+                first_timestamp = ts.min().isoformat()
+                last_timestamp = ts.max().isoformat()
+        except Exception:
+            pass
+
         result.append({
             "windmill_id": windmill_id,
             "size_bytes": stat.st_size,
             "modified_at": datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc).isoformat(),
+            "first_timestamp": first_timestamp,
+            "last_timestamp": last_timestamp,
             "in_use": windmill_id in windmill_ids_running,
         })
     return result

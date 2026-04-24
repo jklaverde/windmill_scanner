@@ -122,12 +122,18 @@ export default function FarmPanel() {
 
   const startAllMutation = useMutation({
     mutationFn: () => api.post(`/farms/${selectedFarmId}/start`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["farms"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["farms"] });
+      qc.invalidateQueries({ queryKey: ["windmills", selectedFarmId] });
+    },
   });
 
   const stopAllMutation = useMutation({
     mutationFn: () => api.post(`/farms/${selectedFarmId}/stop`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["farms"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["farms"] });
+      qc.invalidateQueries({ queryKey: ["windmills", selectedFarmId] });
+    },
   });
 
   const deleteMutation = useMutation({

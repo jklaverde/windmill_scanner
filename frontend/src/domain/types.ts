@@ -98,6 +98,8 @@ export interface ParquetFile {
   windmill_id: string;
   size_bytes: number;
   modified_at: string;
+  first_timestamp: string | null;
+  last_timestamp: string | null;
   in_use: boolean;
 }
 

@@ -1,12 +1,11 @@
 /**
  * Right panel: Parquet File Manager.
  *
- * Lists archive files with size, modified date, in-use status.
+ * Lists archive files with size, data range, modified date, in-use status.
  * Delete button per file (blocked if in-use; no confirmation dialog).
  */
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "../infra/api";
-import { useStore } from "../store/useStore";
 import type { ParquetFile } from "../domain/types";
 
 function formatBytes(n: number): string {
@@ -15,9 +14,13 @@ function formatBytes(n: number): string {
   return `${(n / 1024 / 1024).toFixed(2)} MB`;
 }
 
+function fmtTs(iso: string | null): string {
+  if (!iso) return "—";
+  return iso.replace("T", " ").slice(0, 16) + " UTC";
+}
+
 export default function ParquetPanel() {
   const qc = useQueryClient();
-  const { isCreatingWindmill } = useStore();
 
   const { data: files, isLoading, isError } = useQuery({
     queryKey: ["parquet-files"],
@@ -28,8 +31,6 @@ export default function ParquetPanel() {
     mutationFn: (windmill_id: string) => api.delete(`/parquet-files/${windmill_id}`),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["parquet-files"] }),
   });
-
-  if (isCreatingWindmill) return null;
 
   return (
     <div className="flex flex-col h-full bg-white">
@@ -54,7 +55,8 @@ export default function ParquetPanel() {
               <tr>
                 <th className="text-left px-3 py-2 font-medium text-gray-600">File</th>
                 <th className="text-right px-2 py-2 font-medium text-gray-600">Size</th>
-                <th className="text-right px-2 py-2 font-medium text-gray-600">Modified</th>
+                <th className="text-right px-2 py-2 font-medium text-gray-600">First</th>
+                <th className="text-right px-2 py-2 font-medium text-gray-600">Last</th>
                 <th className="px-2 py-2" />
               </tr>
             </thead>
@@ -68,9 +70,8 @@ export default function ParquetPanel() {
                     )}
                   </td>
                   <td className="px-2 py-2 text-right text-gray-500">{formatBytes(f.size_bytes)}</td>
-                  <td className="px-2 py-2 text-right text-gray-400 whitespace-nowrap">
-                    {new Date(f.modified_at).toISOString().replace("T", " ").slice(0, 16)} UTC
-                  </td>
+                  <td className="px-2 py-2 text-right text-gray-400 whitespace-nowrap">{fmtTs(f.first_timestamp)}</td>
+                  <td className="px-2 py-2 text-right text-gray-400 whitespace-nowrap">{fmtTs(f.last_timestamp)}</td>
                   <td className="px-2 py-2 text-right">
                     <button
                       disabled={f.in_use || deleteMutation.isPending}

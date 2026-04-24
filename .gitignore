@@ -1,1 +1,53 @@
+# ── Credentials & secrets ─────────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+backend/.env
+
+# ── Python ────────────────────────────────────────────────────────────────────
 .venv/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# ── Test & coverage artifacts ─────────────────────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
+*.xml
+
+# ── Generated data (runtime) ──────────────────────────────────────────────────
+backend/data/
+*.db
+*.db-shm
+*.db-wal
+*.parquet
+
+# ── Frontend build output ─────────────────────────────────────────────────────
+frontend/dist/
+frontend/dist-ssr/
+frontend/node_modules/
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── Certificates & keys ───────────────────────────────────────────────────────
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# ── OS & editor noise ─────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.suo
+*.sw?

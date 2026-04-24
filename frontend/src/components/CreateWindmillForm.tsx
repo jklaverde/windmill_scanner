@@ -75,7 +75,8 @@ export default function CreateWindmillForm({ selectedFarmId, selectedFarmName, o
   const f = (field: keyof typeof form) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    const val = e.target.type === "number" ? Number(e.target.value) : e.target.value;
+    const isNumeric = e.target.type === "number" || e.target.type === "range";
+    const val = isNumeric ? Number(e.target.value) : e.target.value;
     setForm((prev) => ({ ...prev, [field]: val }));
     setErrors((prev) => { const n = { ...prev }; delete n[field as string]; return n; });
   };
@@ -166,21 +167,22 @@ export default function CreateWindmillForm({ selectedFarmId, selectedFarmName, o
         {(["temp", "noise", "humidity", "wind"] as const).map((sensor) => {
           const labels: Record<string, string> = { temp: "Temperature (°C)", noise: "Noise Level (dB)", humidity: "Humidity (%RH)", wind: "Wind Speed (km/h)" };
           const keys = [`${sensor}_clamp_min`, `${sensor}_normal_min`, `${sensor}_normal_max`, `${sensor}_spike_max`] as (keyof typeof form)[];
-          const placeholders = ["Clamp Min", "Normal Min", "Normal Max", "Spike Max"];
+          const colLabels = ["Floor", "Sim Min", "Sim Max", "Ceiling"];
+          const rate = form[`${sensor}_rate` as keyof typeof form] as number;
           return (
             <section key={sensor}>
               <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">{labels[sensor]}</h4>
               <div className="grid grid-cols-4 gap-1">
                 {keys.map((k, i) => (
                   <div key={k as string}>
-                    <label className="block text-[10px] text-gray-500 mb-0.5">{placeholders[i]}</label>
+                    <label className="block text-[10px] text-gray-500 mb-0.5">{colLabels[i]}</label>
                     <input type="number" step="any" className="w-full border border-gray-300 rounded px-1 py-0.5 text-xs" value={form[k] as number} onChange={f(k)} />
                   </div>
                 ))}
               </div>
               <div className="mt-1">
-                <label className="block text-[10px] text-gray-500 mb-0.5">Rate ({(form[`${sensor}_rate` as keyof typeof form] as number).toFixed(1)}%)</label>
-                <input type="range" min={0} max={10} step={0.1} className="w-full" value={form[`${sensor}_rate` as keyof typeof form] as number} onChange={f(`${sensor}_rate` as keyof typeof form)} />
+                <label className="block text-[10px] text-gray-500 mb-0.5">±{rate.toFixed(1)}% per beat</label>
+                <input type="range" min={0} max={10} step={0.1} className="w-full" value={rate} onChange={f(`${sensor}_rate` as keyof typeof form)} />
               </div>
             </section>
           );

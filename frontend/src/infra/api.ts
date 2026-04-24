@@ -66,7 +66,14 @@ function showToast(message: string): void {
 
 export default api;
 
-/** Derive WebSocket base URL from VITE_API_BASE_URL. */
+/** Derive WebSocket base URL from VITE_API_BASE_URL.
+ *  When BASE_URL is empty (single-container mode) derive from window.location
+ *  so the WS connection targets the same host that served the page.
+ */
 export function wsBaseUrl(): string {
+  if (!BASE_URL) {
+    const proto = window.location.protocol === "https:" ? "wss:" : "ws:";
+    return `${proto}//${window.location.host}`;
+  }
   return BASE_URL.replace(/^http:/, "ws:").replace(/^https:/, "wss:");
 }
