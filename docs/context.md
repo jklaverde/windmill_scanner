@@ -199,6 +199,8 @@ Deleting the selected farm deselects it: middle panel returns to "No farm select
                   While parquet file list is loading: a loading spinner is shown in the
                   panel body in place of the list.
                   List of all .parquet files (name, size, last modified, in-use status).
+                  Name column displays the full filename: {windmill_id}.parquet
+                  (e.g., "Turbine_01.parquet").
                   size_bytes displayed in human-readable form (KB / MB).
                   modified_at displayed as UTC datetime.
                   Delete button per file (blocked if in-use, no confirmation dialog).
@@ -509,6 +511,21 @@ Does not silently reject.
 On client receives type: error: PERMANENT FAILURE — client closes connection, sets wsStatus to "error",
 and halts all reconnection attempts. Does NOT enter the backoff retry loop.
 Distinct code path from a plain TCP close event, which does trigger backoff.
+
+wsStatus state transition table:
+
+| Trigger                                              | From         | To           |
+|------------------------------------------------------|--------------|--------------|
+| Windmill row clicked (selection)                     | idle         | connecting   |
+| Server sends type:status status:started              | connecting   | running      |
+| Server sends type:status status:started              | stopped      | running      |
+| Server sends type:status status:stopped (on connect) | connecting   | stopped      |
+| Server sends type:status status:stopped (REST stop)  | running      | stopped      |
+| TCP close → backoff retry in progress                | connecting   | connecting   |
+| 5 consecutive TCP close failures (backoff exhausted) | connecting   | error        |
+| Server sends type:error                              | any          | error        |
+| "Reconnect" button clicked                           | error        | connecting   |
+| Windmill deselected / farm changed                   | any          | idle         |
 
 On REST stop (windmill is RUNNING, clients are connected):
 When POST /windmills/{id}/stop or POST /farms/{id}/stop is called, the server pushes
@@ -862,9 +879,12 @@ Note: write-only in v1. No read endpoint; not surfaced in the UI.
 
 Managed queries:
 - Farms list — includes windmill_count + running_count per farm
-- Windmills list — scoped to selectedFarmId
-- Windmill detail
-- History chart data — per (windmill_id, scale)
+- Windmills list — scoped to selectedFarmId; guarded with enabled: !!selectedFarmId.
+- Windmill detail — fetched when a windmill row is clicked (on selection); provides fresh
+  data for the edit form pre-fill and Y-axis "Fixed domain" calculation. Invalidated after PUT.
+  Guarded with enabled: !!selectedWindmillId — query is dormant (returns undefined) when
+  no windmill is selected; fires immediately when selectedWindmillId becomes non-null.
+- History chart data — per (windmill_id, scale); guarded with enabled: !!selectedWindmillId.
 - ETL mutations — isPending disables ETL button + shows spinner
 - Parquet file list
 - Notifications list — fetched on mount, seeded into Zustand once; not re-queried automatically
@@ -898,6 +918,9 @@ modalState: { type: "deleteFarm" | "deleteWindmill", payload: { id: string | num
            | { type: "confirmEtlFarm",     payload: { farm_id: number, farm_name: string } }
            | null
 Note: "Discard changes?" on edit-form Cancel is local component state — not stored in Zustand.
+isCreatingWindmill: boolean — true while the New Windmill creation form is open; false otherwise.
+  Controls the collapse/expand of the Farm and Parquet panels. Stored in Zustand (not local
+  component state) because three separate panel components need to read it without prop drilling.
 wasRunningBeforeEdit: boolean — set true when edit mode stops a running windmill; cleared on exit
 signalsYAxisMode: "auto" | "normalize" | "fixed" — default "auto"; controls Signals chart y-axis
 historyYAxisMode: "auto" | "normalize" | "fixed" — default "auto"; controls History chart y-axis
@@ -968,10 +991,11 @@ pages/ # Single root App page + layout shell
 ### Backend (backend/)
 
 backend/
-domain/ # Pydantic models, business rules, simulation value generator (no FastAPI deps)
-infra/ # SQLAlchemy repos, Parquet ETL + reader, JSONL log writer, SSE file tailer
-http/ # FastAPI routers, WebSocket handler, SSE handler (thin — no business logic)
-shared/ # Error types, shared DTOs
+main.py  # FastAPI app instance; imports and mounts all routers from http/; uvicorn entry point
+domain/  # Pydantic models, business rules, simulation value generator (no FastAPI deps)
+infra/   # SQLAlchemy repos, Parquet ETL + reader, JSONL log writer, SSE file tailer
+http/    # FastAPI routers, WebSocket handler, SSE handler (thin — no business logic)
+shared/  # Error types, shared DTOs
 
 ---
 
