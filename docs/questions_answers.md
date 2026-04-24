@@ -1,32 +1,31 @@
-Q72 — WebSocket connection registry: mechanism for push-on-stop
+Q73 — WS broadcast error handling: what happens when send_json raises on a broken connection?
 
-When POST /windmills/{id}/stop is called (a REST endpoint), it must push status: stopped to all currently open WebSocket connections for that windmill. The document  
- states this happens but doesn't specify how those connections are tracked or accessed from a REST route.
+When the stop route iterates active_connections[windmill_id] and calls await ws.send_json(payload) on each entry, one or more of those sockets may already be half-closed
+(client tab crashed, network drop, etc.). In that case send_json raises a WebSocketDisconnect or ConnectionClosedError.
 
-Three approaches, each with real consequences for the backend structure:
+Two options:
 
-(a) Module-level connection dict in http/
+(a) Catch silently, remove the broken entry
 
-# http/ws_registry.py
+for ws in list(active_connections.get(windmill_id, [])):
+try:
+await ws.send_json(payload)
+except Exception:
+active_connections[windmill_id].remove(ws)
 
-active_connections: dict[str, list[WebSocket]] = {}
-The WS handler registers/deregisters on connect/disconnect. The stop route imports and reads it directly.
+The broadcast continues to all remaining connections. The broken entry is cleaned up opportunistically here rather than waiting for the disconnect handler to fire.
 
-- Pro: Simple, zero boilerplate.
-- Con: Technically a module-level singleton (the pattern the conventions say to avoid). However, asyncio single-process guarantees no race conditions without locking.
+(b) Let it raise — the disconnect handler is sufficient
 
-(b) A ConnectionManager class injected via Depends()
-A class wraps the dict. A single instance is created at app startup and injected into both the WS handler and the stop route via dependency injection.
+The WS handler already removes entries from active_connections on disconnect. If the client is truly gone, the TCP close will trigger the disconnect handler and remove
+it. The stop route makes a best-effort broadcast and does not handle exceptions.
 
-- Pro: Consistent with the "no module-level singletons" convention — the dependency is explicit.
-- Con: More boilerplate; the instance is still effectively a singleton, just declared differently.
+- Pro: simpler stop route.
+- Con: a half-open socket (TCP keepalive not yet fired) can cause the broadcast to raise mid-loop, skipping all remaining connections.
 
-(c) The task registry is extended to also hold open WS connections per windmill
-The existing in-process task registry (already an exception to the no-singleton rule) stores WS connections alongside task handles.
+Recommendation: (a) — the silent-catch-and-remove is three lines and prevents a broken socket from aborting the broadcast to all remaining connected clients. The
+overhead is negligible.
 
-- Pro: Single registry for all per-windmill runtime state.
-- Con: Mixes two concerns (asyncio tasks vs. network connections) in one object.
+Which do you choose: (a) or (b)?
 
-Which approach?
-
-A:/ Which approach is more minimalistic and maintainable, ask me again about this, elaborate more about the functional implications
+A:/ (a)

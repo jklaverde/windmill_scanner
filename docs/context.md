@@ -30,7 +30,10 @@ monitoring windmill infrastructure in a simulation environment. No external phys
 
 - Language: Python 3.11+
 - Framework: FastAPI
-- ORM: SQLAlchemy (not SQLModel) — minimalist
+- ORM: SQLAlchemy (not SQLModel) — minimalist, sync sessions only (no AsyncSession)
+  Session factory: SessionLocal = sessionmaker(engine) in infra/; injected via Depends(get_db) in routes.
+  Route handlers are sync `def` (FastAPI runs them in a threadpool automatically) — not `async def`.
+  Exception: WebSocket and SSE handlers must be `async def` (transport requirement).
 - Migrations: Alembic
 - Primary storage: PostgreSQL
 - Analytics storage: Parquet files — ./data/parquet/{windmill_id}.parquet
@@ -360,6 +363,8 @@ Response 200: { "started": ["Windmill_1", "Windmill_2"],
                "already_running": ["Windmill_3"],
                "errors": [{"windmill_id": "X", "reason": "..."}] }
 Windmills that were already running are reported in "already_running" — not errors, not started.
+Side effect: server pushes status: started to all open WebSocket connections for each newly
+started windmill (same mechanism as per-windmill start).
 
 POST /farms/{farm_id}/stop (best-effort: continues on individual errors)
 Response 200: { "stopped": ["Windmill_1", "Windmill_2"], "errors": [{"windmill_id": "X", "reason": "..."}] }
@@ -533,6 +538,19 @@ When POST /windmills/{id}/stop or POST /farms/{id}/stop is called, the server pu
 for that windmill_id. This is the mechanism by which the Signals chart flips to the
 "Stream Stopped" visual without the client needing to poll.
 
+Connection registry: tracked via a module-level dict in http/ws_registry.py:
+  active_connections: dict[str, list[WebSocket]] = {}
+The WS handler appends on connect and removes on disconnect. The stop route and the delete
+route both import and read this dict directly. Asyncio single-process guarantees no race
+conditions without locking. This is a deliberate pragmatic exception to the
+no-module-level-singletons convention (as is the task registry). The delete route uses the
+same dict to push type: error and close all connections for the deleted windmill_id.
+
+WS broadcast error handling: when iterating active_connections to push a message, each
+send_json call is wrapped in a try/except. On any exception the broken entry is silently
+removed from the list and the broadcast continues to the remaining connections. This prevents
+a half-open socket from aborting the loop and skipping healthy clients.
+
 Message types:
 
 Sensor reading (server -> client, emitted once per sensor beat interval while running):
@@ -574,6 +592,8 @@ Status messages are also written to the backend notification log file.
 - Task structure: two asyncio tasks per windmill — one for the sensor reading loop, one for the
   location heartbeat loop. Each task sleeps for its own beat interval independently. Both tasks
   are cancelled when the windmill is stopped.
+  DB writes inside the async task use asyncio.to_thread(repo.insert, session_factory, data)
+  to offload the sync SQLAlchemy call without blocking the event loop.
 - Edit mode stops stream: when the frontend opens edit mode for a running windmill, it calls
   POST /windmills/{id}/stop. The chart enters "Stream Stopped" state. Zustand records
   wasRunningBeforeEdit = true. On Save: PUT then POST /start. On Cancel: POST /start.
@@ -586,6 +606,11 @@ Status messages are also written to the backend notification log file.
   If no stored values exist (windmill never ran): seeds from midpoint of each sensor's normal range.
 - WebSocket push on stop: when the stop REST endpoint cancels the tasks, it also pushes
   status: stopped through all open WebSocket connections for that windmill (see WebSocket section).
+- WebSocket push on start: symmetric with stop. POST /windmills/{id}/start, after spawning
+  the simulation tasks, immediately iterates active_connections[windmill_id] and pushes
+  { "type": "status", "status": "started", ... } to all open connections using the same
+  broadcast-with-error-handling pattern. The push happens before the route returns 200, so
+  the client's stopped → running transition is instantaneous with the HTTP response.
 - WebSocket reconnect strategy (client-side): exponential backoff starting at 1 second, doubling
   up to 30 seconds max. wsStatus transitions to "error" after 5 consecutive failed attempts.
   Exception: receiving a server-sent type: error message is a permanent failure — no backoff,
@@ -607,6 +632,9 @@ Status messages are also written to the backend notification log file.
   Coordinates only change when the user manually edits them via PUT.
 - Backend restart: all is_running flags are reset to false on startup. Simulation tasks are
   in-process and do not survive a restart. Users must re-start windmills manually after restart.
+  Reset mechanism: FastAPI lifespan handler in main.py issues UPDATE windmills SET is_running = FALSE
+  before the server accepts any requests. The lifespan handler also performs any other one-time
+  startup side-effects (e.g., ensuring ./data/ directories exist).
 
 ---
 
@@ -991,11 +1019,13 @@ pages/ # Single root App page + layout shell
 ### Backend (backend/)
 
 backend/
-main.py  # FastAPI app instance; imports and mounts all routers from http/; uvicorn entry point
-domain/  # Pydantic models, business rules, simulation value generator (no FastAPI deps)
-infra/   # SQLAlchemy repos, Parquet ETL + reader, JSONL log writer, SSE file tailer
-http/    # FastAPI routers, WebSocket handler, SSE handler (thin — no business logic)
-shared/  # Error types, shared DTOs
+main.py           # FastAPI app + lifespan handler; mounts all routers from http/; uvicorn entry point
+domain/           # Pydantic models, business rules, simulation value generator (no FastAPI deps)
+infra/            # SQLAlchemy repos, Parquet ETL + reader, JSONL log writer, SSE file tailer
+http/             # FastAPI routers, WebSocket handler, SSE handler (thin — no business logic)
+  ws_registry.py  # active_connections: dict[str, list[WebSocket]] — module-level, imported by routes + WS handler
+  task_registry.py# task_registry: dict[str, {...}] — asyncio task handles + last sensor values per windmill
+shared/           # Error types, shared DTOs
 
 ---
 
