@@ -97,8 +97,9 @@ Farm creation fields:
   description required, max 100 characters
 Both must be non-empty before the form can be submitted.
 A fixed control bar at the BOTTOM of the left panel shows actions for the selected farm:
-  Start All — starts all stopped windmills in the farm.
-  Stop All  — stops all running windmills in the farm.
+  Start All — starts all stopped windmills in the farm. Fire-and-forget: button is NOT
+              disabled while the request is in-flight. No loading/disabled state shown.
+  Stop All  — stops all running windmills in the farm. Same fire-and-forget behaviour.
   Delete    — requires a confirmation modal; blocked (409) if windmill_count > 0.
 If no farm is selected, the control bar buttons are disabled (grayed).
 Deleting the selected farm deselects it: middle panel returns to "No farm selected" prompt.
@@ -112,11 +113,14 @@ Deleting the selected farm deselects it: middle panel returns to "No farm select
                   tooltip: "Select a farm first."
                   When a farm is selected: button enabled; tooltip: "Move all the signal per
                   windmill in this farm from the database to parquet (archive) files."
+                  While in-flight: disabled + spinner (same behaviour as per-windmill ETL button).
                   Windmill list sorted alphabetically by name (A → Z).
                   Windmill list row displays: name (primary label) + windmill_id (secondary, smaller)
                   + is_running status badge + sensor_beat (with unit) + location_beat (with unit).
                   Beat values shown in compact notation: ss→s, mm→m, hh→h, dd→d
                   (e.g., sensor_beat=5, unit=ss displays as "5s"; location_beat=1, unit=dd as "1d").
+                  Hovering the windmill row shows the windmill description in a tooltip
+                  (same pattern as farm rows).
                   Clicking a windmill row selects it and activates both charts.
                   Clicking the already-selected windmill row is a no-op — nothing changes.
                   Farm change: clicking a different farm automatically deselects the current windmill
@@ -130,6 +134,9 @@ Deleting the selected farm deselects it: middle panel returns to "No farm select
                   When the form opens, the left (Farm) and right (Parquet) panels both collapse
                   automatically — the middle panel expands to full width. Both panels restore to
                   their original widths when creation completes (save or cancel).
+                  Farm change while creation form is open: if the user clicks a different farm,
+                  selectedFarmId updates and the form remains open — the user is now creating a
+                  windmill under the newly selected farm. Side panels remain collapsed.
                   Windmill edit: INLINE (no modal). An edit button switches the panel
                   from "list mode" to "edit mode" — the windmill list is replaced by the edit form.
                   Navigating back (cancel/save) returns to "list mode". modalState is not used for edit.
@@ -193,6 +200,8 @@ When running: normal coloured lines.
                   and selects a different windmill, the History chart loads on "day" for the
                   new windmill (does not reset to "minute").
                   Unaffected by windmill running state.
+                  While TanStack Query is fetching (initial load or after scale change):
+                  a loading spinner overlay is shown on the chart area.
                   When ETL has run but the selected time window contains 0 data points:
                   shows "No data available for this time range" — same placeholder used
                   regardless of whether it is pre-ETL or just an empty window.
@@ -560,7 +569,9 @@ Notification entry schema:
 "level": "info" | "error",
 "message": "Human-readable description",
 "entity_type": "farm" | "windmill" | "system",
-"entity_id": "Windmill_1234" // null for system-level events
+"entity_id": "Windmill_1234"  // windmill_id string for windmill events;
+                               // farm id (integer, cast to string, e.g. "7") for farm events;
+                               // null for system-level events
 }
 
 Events that produce a notification:
