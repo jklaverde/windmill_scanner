@@ -84,6 +84,8 @@ Row 1: App title bar (small, full width) — title text: "Windmill Data Stream S
 
 Row 2: Three equal-width panels side by side
 Left panel: Farm Management
+While farms are loading (initial fetch or after a mutation): a loading spinner
+is shown in the panel body in place of the list.
 Scrollable list of all farms, sorted alphabetically by name (A → Z).
 Clicking a farm selects it and loads its windmills in the middle panel.
 No farm is selected on initial load — middle panel shows a prompt.
@@ -92,6 +94,8 @@ Windmill counts shown at the bottom of the row with traffic-light icons:
   green icon = running_count, red icon = (windmill_count − running_count), plain number = total.
 Empty state (no farms exist): centred prompt "No farms yet. Click 'New Farm' to get started."
 Create form: toggled — a "New Farm" button reveals the creation form; hidden when not in use.
+The form appears inline at the bottom of the panel, below the farms list. The panel
+scrolls internally so both the list and the form are accessible.
 Farm creation fields:
   name        required, max 60 characters
   description required, max 100 characters
@@ -113,7 +117,10 @@ Deleting the selected farm deselects it: middle panel returns to "No farm select
                   tooltip: "Select a farm first."
                   When a farm is selected: button enabled; tooltip: "Move all the signal per
                   windmill in this farm from the database to parquet (archive) files."
+                  Requires a confirmation dialog before the request is sent.
                   While in-flight: disabled + spinner (same behaviour as per-windmill ETL button).
+                  While windmills are loading (initial fetch or after a mutation): a loading
+                  spinner is shown in the panel body in place of the list.
                   Windmill list sorted alphabetically by name (A → Z).
                   Windmill list row displays: name (primary label) + windmill_id (secondary, smaller)
                   + is_running status badge + sensor_beat (with unit) + location_beat (with unit).
@@ -134,6 +141,9 @@ Deleting the selected farm deselects it: middle panel returns to "No farm select
                   When the form opens, the left (Farm) and right (Parquet) panels both collapse
                   automatically — the middle panel expands to full width. Both panels restore to
                   their original widths when creation completes (save or cancel).
+                  The form header shows the currently selected farm name as context (e.g.,
+                  "New Windmill in: <Farm Name>"). This label updates if the user selects a
+                  different farm while the form is open.
                   Farm change while creation form is open: if the user clicks a different farm,
                   selectedFarmId updates and the form remains open — the user is now creating a
                   windmill under the newly selected farm. Side panels remain collapsed.
@@ -143,27 +153,44 @@ Deleting the selected farm deselects it: middle panel returns to "No farm select
                   Stream behaviour during edit: if the windmill is running when Edit is opened,
                   the stream is automatically stopped (implicit stop — frontend calls POST /stop,
                   chart enters "Stream Stopped" state). Zustand stores wasRunningBeforeEdit flag.
+                  Save button: disabled until at least one field has been modified (dirty-state
+                  tracking). Enabled as soon as any field differs from the loaded values.
                   On Save: PUT applied, then auto-restart (POST /start) if wasRunningBeforeEdit.
-                  On Cancel: discard changes, auto-restart (POST /start) if wasRunningBeforeEdit.
+                  On Cancel (no changes made — Save still disabled): closes immediately,
+                  no confirmation dialog; auto-restart (POST /start) if wasRunningBeforeEdit.
+                  On Cancel (changes made — Save was enabled): "Discard changes?" confirmation
+                  dialog appears. If confirmed: changes discarded, auto-restart if wasRunningBeforeEdit.
                   Panel-level control bar (applies to the SELECTED windmill):
                   All five buttons are disabled (grayed) when no windmill is selected.
-                    Start — also disabled if selected windmill is already running.
-                    Stop  — also disabled if selected windmill is already stopped.
+                    Start — also disabled if selected windmill is already running,
+                            or while the start request is in-flight.
+                    Stop  — also disabled if selected windmill is already stopped,
+                            or while the stop request is in-flight.
                     Edit  — (no additional disable condition beyond no-selection)
                     Delete — requires a confirmation modal; also disabled if running.
-                    ETL   — disabled while ETL is in-flight (shows spinner).
+                    ETL   — requires a confirmation dialog before the request is sent.
+                            Disabled while ETL is in-flight (shows spinner).
                             Tooltip when enabled: "Move signals for this windmill from the
                             database to its parquet (archive) file."
                             Tooltip when disabled/in-flight: "ETL in progress…"
                   No windmill is selected until explicitly clicked.
 
     Right panel:  Parquet File Manager
+                  While parquet file list is loading: a loading spinner is shown in the
+                  panel body in place of the list.
                   List of all .parquet files (name, size, last modified, in-use status).
                   size_bytes displayed in human-readable form (KB / MB).
                   modified_at displayed as UTC datetime.
                   Delete button per file (blocked if in-use, no confirmation dialog).
                   Empty state (no files yet): centred prompt
                   "No archive files yet. Run ETL on a windmill to generate one."
+
+List fetch error state (applies to all three panels — farms, windmills, parquet files):
+When a list fetch fails (network error or 5xx), two things happen simultaneously:
+  1. The global axios toast fires with as much server error detail as available.
+  2. The panel body shows an inline error placeholder text
+     (e.g., "Failed to load farms.", "Failed to load windmills.", "Failed to load files.").
+The error placeholder replaces the spinner or previous list content.
 
 Row 3: Two equal-width chart panels (always rendered, activate on windmill selection)
 Left chart: Signals — real-time WebSocket sensor readings
@@ -207,9 +234,17 @@ When running: normal coloured lines.
                   regardless of whether it is pre-ETL or just an empty window.
 
 Row 4: Notifications panel (full width, persistent)
+On initial app load: a loading spinner is shown in the panel while GET /notifications is
+in-flight. Entries appear once the fetch completes and seeds the Zustand store.
 Shows all notification log entries, newest first.
 Updates in real time via SSE (entries appended as they arrive).
-Manual refresh button re-fetches the full list via REST.
+SSE disconnection indicator: a subtle status badge or icon appears in the notifications
+panel header while the SSE stream is disconnected or reconnecting. It disappears once
+the connection is restored.
+Manual refresh button re-fetches the full list via REST; button is disabled while
+the refresh fetch is in-flight.
+Fetch error state (initial load or manual refresh): toast fires with server error detail
++ panel shows an inline error placeholder text (e.g., "Failed to load notifications.").
 Clear button empties the Zustand notification store (frontend only — does not delete the log file).
 Frontend cap: 500 entries. Oldest entries are dropped when the store exceeds 500.
 Each row displays: timestamp (HH:MM:SS UTC) + " — " + message.
@@ -838,7 +873,11 @@ selectedWindmillId: string | null
 signalsBuffer: SensorReading[] (rolling last 100; cleared on windmill select/deselect)
 wsStatus: "idle" | "connecting" | "running" | "stopped" | "error"
 notifications: NotificationEntry[] (seeded from TanStack Query on mount; appended by SSE; capped at 500)
-modalState: { type: "deleteFarm" | "deleteWindmill", payload: { id: string | number, name: string } } | null
+modalState: { type: "deleteFarm" | "deleteWindmill", payload: { id: string | number, name: string } }
+           | { type: "confirmEtlWindmill", payload: { windmill_id: string, windmill_name: string } }
+           | { type: "confirmEtlFarm",     payload: { farm_id: number, farm_name: string } }
+           | null
+Note: "Discard changes?" on edit-form Cancel is local component state — not stored in Zustand.
 wasRunningBeforeEdit: boolean — set true when edit mode stops a running windmill; cleared on exit
 signalsYAxisMode: "auto" | "normalize" | "fixed" — default "auto"; controls Signals chart y-axis
 historyYAxisMode: "auto" | "normalize" | "fixed" — default "auto"; controls History chart y-axis
