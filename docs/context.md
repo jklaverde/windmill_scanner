@@ -100,6 +100,12 @@ Farm creation fields:
   name        required, max 60 characters
   description required, max 100 characters
 Both must be non-empty before the form can be submitted.
+After successful creation: the new farm appears in the sorted list but is NOT
+auto-selected — the user must click it to select it.
+Clicking Cancel on the New Farm form: if any field has been filled in (name or
+description has text), a "Discard new entry?" confirmation dialog appears before
+the form closes. Buttons: "Yes, discard" (primary) / "No, go back".
+If no fields have been touched, the form closes immediately.
 A fixed control bar at the BOTTOM of the left panel shows actions for the selected farm:
   Start All — starts all stopped windmills in the farm. Fire-and-forget: button is NOT
               disabled while the request is in-flight. No loading/disabled state shown.
@@ -118,6 +124,9 @@ Deleting the selected farm deselects it: middle panel returns to "No farm select
                   When a farm is selected: button enabled; tooltip: "Move all the signal per
                   windmill in this farm from the database to parquet (archive) files."
                   Requires a confirmation dialog before the request is sent.
+                  Dialog body: "Run ETL for all windmills in {farm_name}? This will archive
+                  all new sensor readings to their Parquet files."
+                  Dialog buttons: "Archive" (primary) / "Cancel"
                   While in-flight: disabled + spinner (same behaviour as per-windmill ETL button).
                   While windmills are loading (initial fetch or after a mutation): a loading
                   spinner is shown in the panel body in place of the list.
@@ -144,6 +153,13 @@ Deleting the selected farm deselects it: middle panel returns to "No farm select
                   The form header shows the currently selected farm name as context (e.g.,
                   "New Windmill in: <Farm Name>"). This label updates if the user selects a
                   different farm while the form is open.
+                  After successful creation: side panels restore, form closes, and the new
+                  windmill appears in the sorted list but is NOT auto-selected — the user
+                  must click it to select it.
+                  Clicking Cancel on the New Windmill form: if any field has been modified
+                  from its initial (default-prefilled) state, a "Discard new entry?"
+                  confirmation dialog appears. Buttons: "Yes, discard" (primary) / "No, go back".
+                  If no fields have been changed from their defaults, the form closes immediately.
                   Farm change while creation form is open: if the user clicks a different farm,
                   selectedFarmId updates and the form remains open — the user is now creating a
                   windmill under the newly selected farm. Side panels remain collapsed.
@@ -159,7 +175,8 @@ Deleting the selected farm deselects it: middle panel returns to "No farm select
                   On Cancel (no changes made — Save still disabled): closes immediately,
                   no confirmation dialog; auto-restart (POST /start) if wasRunningBeforeEdit.
                   On Cancel (changes made — Save was enabled): "Discard changes?" confirmation
-                  dialog appears. If confirmed: changes discarded, auto-restart if wasRunningBeforeEdit.
+                  dialog appears. Buttons: "Yes, discard" (primary) / "No, go back".
+                  If confirmed: changes discarded, auto-restart if wasRunningBeforeEdit.
                   Panel-level control bar (applies to the SELECTED windmill):
                   All five buttons are disabled (grayed) when no windmill is selected.
                     Start — also disabled if selected windmill is already running,
@@ -169,6 +186,9 @@ Deleting the selected farm deselects it: middle panel returns to "No farm select
                     Edit  — (no additional disable condition beyond no-selection)
                     Delete — requires a confirmation modal; also disabled if running.
                     ETL   — requires a confirmation dialog before the request is sent.
+                            Dialog body: "Run ETL for {windmill_name}? This will archive
+                            all new sensor readings to the Parquet file."
+                            Dialog buttons: "Archive" (primary) / "Cancel"
                             Disabled while ETL is in-flight (shows spinner).
                             Tooltip when enabled: "Move signals for this windmill from the
                             database to its parquet (archive) file."
@@ -983,6 +1003,199 @@ shared/ # Error types, shared DTOs
   backend on startup if it does not exist. No manual setup required.
 - docker-compose.yml at project root: postgres:16, database windmill_scanner, port 5432.
   Default credentials: postgres/postgres (overridable via DATABASE_URL in backend/.env).
+
+---
+
+## Docker Deployment
+
+### Container architecture
+
+Three services defined in `docker-compose.prod.yml` (separate from the dev `docker-compose.yml`):
+
+| Service    | Base image          | External port | Role                                      |
+|------------|---------------------|---------------|-------------------------------------------|
+| db         | postgres:16         | none          | PostgreSQL database                       |
+| backend    | python:3.11-slim    | none          | FastAPI + uvicorn (internal only)         |
+| frontend   | nginx:1.25-alpine   | 80            | Serves static files + reverse-proxies API |
+
+nginx is the single external entry point. The backend is never exposed directly.
+
+### Dockerfile: frontend (multi-stage)
+
+```dockerfile
+# Stage 1 — build
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+ARG VITE_API_BASE_URL=http://localhost
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+RUN npm run build
+
+# Stage 2 — serve
+FROM nginx:1.25-alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+```
+
+`VITE_API_BASE_URL` is passed as a build argument (default `http://localhost`). Since Vite bakes
+env vars at build time, this value is embedded in the JS bundle during `npm run build`.
+
+### Dockerfile: backend
+
+```dockerfile
+FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+```
+
+### backend/entrypoint.sh
+
+```sh
+#!/bin/sh
+set -e
+echo "Running Alembic migrations..."
+alembic upgrade head
+echo "Starting server..."
+exec "$@"
+```
+
+Migrations run automatically before uvicorn starts. The `depends_on` health check in
+docker-compose ensures PostgreSQL is accepting connections before this runs.
+
+### frontend/nginx.conf
+
+```nginx
+server {
+    listen 80;
+
+    # WebSocket proxy — upgrade headers required
+    location /ws/ {
+        proxy_pass         http://backend:8000;
+        proxy_http_version 1.1;
+        proxy_set_header   Upgrade    $http_upgrade;
+        proxy_set_header   Connection "upgrade";
+        proxy_set_header   Host       $host;
+        proxy_read_timeout 3600s;
+    }
+
+    # SSE proxy — buffering must be disabled for streaming
+    location /notifications/stream {
+        proxy_pass         http://backend:8000;
+        proxy_http_version 1.1;
+        proxy_set_header   Host       $host;
+        proxy_buffering    off;
+        proxy_cache        off;
+        add_header         X-Accel-Buffering no;
+        proxy_read_timeout 86400s;
+    }
+
+    # REST API proxy — all known API root paths
+    location ~ ^/(farms|windmills|parquet-files|notifications) {
+        proxy_pass          http://backend:8000;
+        proxy_set_header    Host        $host;
+        proxy_set_header    X-Real-IP   $remote_addr;
+    }
+
+    # Frontend SPA — serve static files, fallback to index.html
+    location / {
+        root       /usr/share/nginx/html;
+        try_files  $uri $uri/ /index.html;
+    }
+}
+```
+
+nginx location priority: exact `=` → prefix `^~` → regex `~` → longest prefix.
+The regex block for API paths takes priority over the `/` prefix block, so API requests
+are never served as static files.
+
+### docker-compose.prod.yml
+
+```yaml
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER:     postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB:       windmill_scanner
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test:     ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout:  5s
+      retries:  10
+
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL:      postgresql://postgres:postgres@db:5432/windmill_scanner
+      PARQUET_DATA_PATH: /app/data/parquet
+      LOG_FILE_PATH:     /app/data/notifications.jsonl
+      CORS_ORIGINS:      http://localhost
+    volumes:
+      - app_data:/app/data
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: http://localhost
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  db_data:   # PostgreSQL data directory
+  app_data:  # Parquet files + notifications.jsonl — mounted at /app/data/ in backend
+```
+
+### Data volumes
+
+- **db_data** — PostgreSQL data directory. Persists all farm, windmill, and sensor records.
+- **app_data** — Backend `/app/data/`. Persists Parquet archive files and the notification log.
+  Only the backend container mounts this volume.
+
+### Key differences vs. dev
+
+| Setting              | Dev                       | Docker prod          |
+|----------------------|---------------------------|----------------------|
+| PostgreSQL host      | localhost:5432            | db:5432 (internal)   |
+| Backend port         | 8000 (exposed directly)   | 8000 (internal only) |
+| Frontend server      | Vite dev server :5173     | nginx :80            |
+| VITE_API_BASE_URL    | http://localhost:8000     | http://localhost     |
+| CORS_ORIGINS         | http://localhost:5173     | http://localhost     |
+| Alembic migrations   | manual                    | auto on startup      |
+
+### Build and run
+
+```sh
+# First run — build images and start all services
+docker-compose -f docker-compose.prod.yml up --build
+
+# Rebuild a single service after code changes
+docker-compose -f docker-compose.prod.yml build backend
+
+# Tail backend logs (migrations + app startup visible here)
+docker-compose -f docker-compose.prod.yml logs -f backend
+
+# Stop and remove containers (volumes preserved)
+docker-compose -f docker-compose.prod.yml down
+```
 
 ---
 

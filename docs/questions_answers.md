@@ -1,17 +1,10 @@
-Q61 — Post-creation selection behavior
+Q64 — Discard confirmation dialog button labels
 
-After a farm or windmill is successfully created, what happens to the selection state?
+For the "Discard changes?" dialog (edit form Cancel with unsaved changes) and the "Discard new entry?" dialog (creation form Cancel with filled fields), what are the  
+ button labels?
 
-For farm creation:
+- (a) "Discard" (primary, destructive) / "Cancel"
+- (b) "Discard" (primary, destructive) / "Keep editing"
+- (c) "Yes, discard" (primary) / "No, go back"
 
-- (a) The newly created farm is automatically selected
-- (b) Selection does not change — user must click the farm to select it
-
-A:/ (b)
-
-For windmill creation:
-
-- (a) The newly created windmill is automatically selected (activates both charts)
-- (b) Selection does not change — user must click the windmill row to select it
-
-A:/ (b)
+A:/ (c)
