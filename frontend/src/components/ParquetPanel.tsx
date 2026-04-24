@@ -47,7 +47,7 @@ export default function ParquetPanel() {
           <p className="text-sm text-gray-500 text-center mt-8">Failed to load files.</p>
         ) : !files || files.length === 0 ? (
           <p className="text-xs text-gray-400 text-center mt-8 px-4">
-            No archive files yet. Run ETL on a windmill to generate one.
+            No archive files yet. Run ETL on a wind turbine to generate one.
           </p>
         ) : (
           <table className="w-full text-xs">

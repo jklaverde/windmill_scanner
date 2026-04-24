@@ -97,7 +97,7 @@ export default function SignalsChart() {
       <div className="flex-1 relative min-h-0">
         {!selectedWindmillId ? (
           <div className="absolute inset-0 flex items-center justify-center text-sm text-gray-400">
-            Select a windmill to view data
+            Select a wind turbine to view data
           </div>
         ) : (
           <>

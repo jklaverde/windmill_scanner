@@ -21,7 +21,7 @@ export default function AboutModal({ onClose }: Props) {
             IU Internationale Hochschule
           </p>
           <h1 className="text-lg font-semibold text-white leading-snug">
-            Windmill Data Stream Simulator
+            Wind Turbine Data Stream Simulator
           </h1>
         </div>
 
@@ -54,10 +54,10 @@ export default function AboutModal({ onClose }: Props) {
             <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">Description</p>
             <p className="text-gray-600 leading-relaxed">
               This application is a real-time simulator for wind turbine sensor data streams.
-              It supports the creation and management of wind turbine farms and parks, generating
-              continuous multi-sensor readings — temperature, noise level, relative humidity, and
-              wind speed — to facilitate the monitoring, archival, and early detection of potential
-              equipment anomalies.
+              It supports the creation and management of wind parks, generating continuous
+              multi-sensor readings — temperature, noise level, relative humidity, and wind speed —
+              to facilitate the monitoring, archival, and early detection of potential equipment
+              anomalies.
             </p>
           </div>
 

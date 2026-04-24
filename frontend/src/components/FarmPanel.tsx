@@ -151,12 +151,12 @@ export default function FarmPanel() {
     <div className="flex flex-col h-full bg-white">
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-2 border-b border-gray-200 shrink-0">
-        <span className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Farm Management</span>
+        <span className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Wind Park Management</span>
         <button
           onClick={() => setShowForm((v) => !v)}
           className="text-xs bg-slate-700 text-white px-2 py-1 rounded hover:bg-slate-800"
         >
-          {showForm ? "Cancel" : "New Farm"}
+          {showForm ? "Cancel" : "New Wind Park"}
         </button>
       </div>
 
@@ -167,9 +167,9 @@ export default function FarmPanel() {
             <div className="w-6 h-6 border-2 border-slate-500 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : isError ? (
-          <p className="text-sm text-gray-500 text-center mt-8">Failed to load farms.</p>
+          <p className="text-sm text-gray-500 text-center mt-8">Failed to load wind parks.</p>
         ) : !farms || farms.length === 0 ? (
-          <p className="text-sm text-gray-500 text-center mt-8">No farms yet. Click 'New Farm' to get started.</p>
+          <p className="text-sm text-gray-500 text-center mt-8">No wind parks yet. Click 'New Wind Park' to get started.</p>
         ) : (
           <ul>
             {farms.map((farm) => (
@@ -204,14 +204,14 @@ export default function FarmPanel() {
           onClick={() => startAllMutation.mutate()}
           className="flex-1 text-xs py-1.5 bg-green-600 text-white rounded disabled:opacity-40 hover:bg-green-700"
         >
-          Start All
+          Start Park
         </button>
         <button
           disabled={!selectedFarmId}
           onClick={() => stopAllMutation.mutate()}
           className="flex-1 text-xs py-1.5 bg-amber-500 text-white rounded disabled:opacity-40 hover:bg-amber-600"
         >
-          Stop All
+          Stop Park
         </button>
         <button
           disabled={!selectedFarmId}
@@ -233,7 +233,7 @@ export default function FarmPanel() {
         <ConfirmDialog
           open
           title={`Delete "${modalState.payload.name}"?`}
-          body="Are you sure you want to delete this farm? This cannot be undone."
+          body="Are you sure you want to delete this wind park? This cannot be undone."
           confirmLabel="Delete"
           cancelLabel="Cancel"
           destructive

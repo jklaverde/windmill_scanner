@@ -180,7 +180,7 @@ export default function WindmillPanel() {
     <div className="flex flex-col h-full bg-white">
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-2 border-b border-gray-200 shrink-0">
-        <span className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Windmill Management</span>
+        <span className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Wind Turbine Management</span>
         <div className="flex gap-1">
           <button
             disabled={!selectedFarmId || farmEtlMutation.isPending}
@@ -189,7 +189,7 @@ export default function WindmillPanel() {
                 ? "Select a farm first."
                 : farmEtlMutation.isPending
                 ? "ETL in progress…"
-                : `Move all the signal per windmill in this farm from the database to parquet (archive) files.`
+                : `Move all signals per wind turbine in this wind park from the database to parquet (archive) files.`
             }
             onClick={() => setFarmEtlConfirm(true)}
             className="text-xs border border-gray-300 px-2 py-0.5 rounded hover:bg-gray-50 disabled:opacity-40"
@@ -198,11 +198,11 @@ export default function WindmillPanel() {
           </button>
           <button
             disabled={!selectedFarmId}
-            title={!selectedFarmId ? "A farm must be first selected." : "Create a new windmill."}
+            title={!selectedFarmId ? "A wind park must be first selected." : "Create a new wind turbine."}
             onClick={openCreate}
             className="text-xs bg-slate-700 text-white px-2 py-0.5 rounded hover:bg-slate-800 disabled:opacity-40"
           >
-            New Windmill
+            New Wind Turbine
           </button>
         </div>
       </div>
@@ -210,7 +210,7 @@ export default function WindmillPanel() {
       {/* Windmill list */}
       <div className="flex-1 panel-scroll min-h-0">
         {!selectedFarmId ? (
-          <p className="text-sm text-gray-400 text-center mt-8">Select a farm to view its windmills.</p>
+          <p className="text-sm text-gray-400 text-center mt-8">Select a wind park to view its wind turbines.</p>
         ) : isLoading ? (
           <div className="flex items-center justify-center h-full">
             <div className="w-6 h-6 border-2 border-slate-500 border-t-transparent rounded-full animate-spin" />
@@ -219,7 +219,7 @@ export default function WindmillPanel() {
           <p className="text-sm text-gray-500 text-center mt-8">Failed to load windmills.</p>
         ) : !windmills || windmills.length === 0 ? (
           <p className="text-sm text-gray-400 text-center mt-8">
-            No windmills in this farm. Click 'New Windmill' to add one.
+            No wind turbines in this wind park. Click 'New Wind Turbine' to add one.
           </p>
         ) : (
           <ul>
@@ -279,7 +279,7 @@ export default function WindmillPanel() {
             etlMutation.isPending
               ? "ETL in progress…"
               : selectedWindmillId
-              ? `Move signals for this windmill from the database to its parquet (archive) file.`
+              ? `Move signals for this wind turbine from the database to its parquet (archive) file.`
               : ""
           }
           onClick={() => setWindmillEtlConfirm(true)}
@@ -294,7 +294,7 @@ export default function WindmillPanel() {
         <ConfirmDialog
           open
           title={`Delete "${modalState.payload.name}"?`}
-          body="Are you sure you want to delete this windmill? This cannot be undone."
+          body="Are you sure you want to delete this wind turbine? This cannot be undone."
           confirmLabel="Delete"
           cancelLabel="Cancel"
           destructive
@@ -308,7 +308,7 @@ export default function WindmillPanel() {
         <ConfirmDialog
           open
           title={`Run ETL for ${selectedWindmill.name}?`}
-          body="This will archive all new sensor readings to the Parquet file."
+          body="This will archive all new sensor readings for this wind turbine to the Parquet file."
           confirmLabel="Archive"
           cancelLabel="Cancel"
           onConfirm={() => etlMutation.mutate(selectedWindmill.windmill_id)}
@@ -320,8 +320,8 @@ export default function WindmillPanel() {
       {farmEtlConfirm && selectedFarm && (
         <ConfirmDialog
           open
-          title={`Run ETL for all windmills in ${selectedFarm.name}?`}
-          body="This will archive all new sensor readings to their Parquet files."
+          title={`Run ETL for all wind turbines in ${selectedFarm.name}?`}
+          body="This will archive all new sensor readings for all wind turbines to their Parquet files."
           confirmLabel="Archive"
           cancelLabel="Cancel"
           onConfirm={() => farmEtlMutation.mutate(selectedFarm.id)}
