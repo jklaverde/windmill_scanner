@@ -11,6 +11,8 @@ def insert_reading(
     noise_level: float,
     humidity: float,
     wind_speed: float,
+    potential_anomaly: bool | None = None,
+    anomaly_probability: float | None = None,
 ) -> SensorReading:
     """Insert a sensor reading row and return the persisted instance."""
     reading = SensorReading(
@@ -20,6 +22,8 @@ def insert_reading(
         noise_level=noise_level,
         humidity=humidity,
         wind_speed=wind_speed,
+        potential_anomaly=potential_anomaly,
+        anomaly_probability=anomaly_probability,
     )
     db.add(reading)
     db.commit()

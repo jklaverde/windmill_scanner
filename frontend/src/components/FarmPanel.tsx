@@ -6,7 +6,7 @@
  * - Fixed bottom control bar: Start All / Stop All / Delete.
  * - All loading, empty, error, and discard-confirmation states.
  */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "../infra/api";
 import type { Farm } from "../domain/types";
@@ -112,13 +112,17 @@ function NewFarmForm({ onClose }: NewFarmFormProps) {
 
 export default function FarmPanel() {
   const qc = useQueryClient();
-  const { selectedFarmId, selectFarm, openModal, modalState, closeModal } = useStore();
+  const { selectedFarmId, selectFarm, openModal, modalState, closeModal, farmAnomalyState, seedFarmAnomalyState } = useStore();
   const [showForm, setShowForm] = useState(false);
 
   const { data: farms, isLoading, isError } = useQuery({
     queryKey: ["farms"],
     queryFn: fetchFarms,
   });
+
+  useEffect(() => {
+    if (farms) seedFarmAnomalyState(farms);
+  }, [farms, seedFarmAnomalyState]);
 
   const startAllMutation = useMutation({
     mutationFn: () => api.post(`/farms/${selectedFarmId}/start`),
@@ -133,6 +137,7 @@ export default function FarmPanel() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["farms"] });
       qc.invalidateQueries({ queryKey: ["windmills", selectedFarmId] });
+      qc.invalidateQueries({ queryKey: ["parquet-files"] });
     },
   });
 
@@ -188,6 +193,11 @@ export default function FarmPanel() {
                   <span className="text-red-500">● {farm.windmill_count - farm.running_count}</span>
                   <span className="text-gray-500">{farm.windmill_count} total</span>
                 </div>
+                {farmAnomalyState[farm.id] && (
+                  <div className="text-xs text-red-600 font-medium mt-0.5">
+                    Anomaly detected
+                  </div>
+                )}
               </li>
             ))}
           </ul>

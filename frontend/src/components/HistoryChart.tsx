@@ -6,7 +6,7 @@
  */
 import { useQuery } from "@tanstack/react-query";
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine,
 } from "recharts";
 import api from "../infra/api";
 import { useStore } from "../store/useStore";
@@ -79,7 +79,10 @@ export default function HistoryChart() {
       historyYAxisMode === "normalize" && windmill
         ? ((r.wind_speed - windmill.wind_clamp_min) / (windmill.wind_spike_max - windmill.wind_clamp_min)) * 100
         : r.wind_speed,
+    potential_anomaly: r.potential_anomaly,
   }));
+
+  const anomalyPoints = chartData.filter((d) => d.potential_anomaly === true);
 
   const yDomain: [number | "auto" | "dataMin", number | "auto" | "dataMax"] =
     historyYAxisMode === "normalize"
@@ -143,6 +146,16 @@ export default function HistoryChart() {
                   dot={false}
                   isAnimationActive={false}
                   name={s.label}
+                />
+              ))}
+              {anomalyPoints.map((pt, i) => (
+                <ReferenceLine
+                  key={i}
+                  x={pt.ts}
+                  stroke="#ef4444"
+                  strokeOpacity={0.5}
+                  strokeWidth={1.5}
+                  strokeDasharray="4 2"
                 />
               ))}
             </LineChart>

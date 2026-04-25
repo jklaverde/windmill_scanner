@@ -4,6 +4,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field, field_validator
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from infra.db import get_db
@@ -92,11 +93,28 @@ class WindmillUpdate(BaseModel):
 
 @router.get("/farms/{farm_id}/windmills", summary="List windmills in a farm")
 def list_windmills(farm_id: int, db: Session = Depends(get_db)):
-    """Return windmill list for the given farm, sorted alphabetically."""
+    """Return windmill list for the given farm, sorted alphabetically.
+
+    Each row includes latest_anomaly: the potential_anomaly value of the most
+    recent sensor reading (null if no readings or ML was unreachable).
+    """
     farm = farm_repo.get_by_id(db, farm_id)
     if not farm:
         raise HTTPException(status_code=404, detail="Farm not found.")
-    return [windmill_repo.windmill_to_dict(w) for w in windmill_repo.get_by_farm(db, farm_id)]
+    result = []
+    for wm in windmill_repo.get_by_farm(db, farm_id):
+        d = windmill_repo.windmill_to_dict(wm)
+        row = db.execute(
+            text(
+                "SELECT potential_anomaly FROM sensor_readings "
+                "WHERE windmill_id = :wid "
+                "ORDER BY measurement_timestamp DESC LIMIT 1"
+            ),
+            {"wid": wm.windmill_id},
+        ).fetchone()
+        d["latest_anomaly"] = bool(row[0]) if row and row[0] is not None else None
+        result.append(d)
+    return result
 
 
 @router.post("/windmills", status_code=201, summary="Create a windmill")

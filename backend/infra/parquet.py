@@ -70,6 +70,8 @@ def run_etl(windmill_id: str, db) -> dict:
             "noise_level": r.noise_level,
             "humidity": r.humidity,
             "wind_speed": r.wind_speed,
+            "potential_anomaly": r.potential_anomaly,
+            "anomaly_probability": r.anomaly_probability,
         } for r in rows])
 
         if existing_df is not None and len(existing_df) > 0:
@@ -120,16 +122,20 @@ def read_history(windmill_id: str, scale: str, windmill_config: dict) -> list[di
 
     # minute scale: return raw rows, no sampling
     if scale == "minute":
-        return [
-            {
+        result = []
+        for _, row in df.iterrows():
+            pa = row.get("potential_anomaly")
+            ap = row.get("anomaly_probability")
+            result.append({
                 "measurement_timestamp": row["measurement_timestamp"].isoformat(),
                 "temperature": float(row["temperature"]),
                 "noise_level": float(row["noise_level"]),
                 "humidity": float(row["humidity"]),
                 "wind_speed": float(row["wind_speed"]),
-            }
-            for _, row in df.iterrows()
-        ]
+                "potential_anomaly": None if pd.isna(pa) else bool(pa),
+                "anomaly_probability": None if pd.isna(ap) else float(ap),
+            })
+        return result
 
     # Compute sensor value ranges for normalised deviation scoring
     sensor_ranges: dict[str, float] = {
@@ -165,12 +171,17 @@ def read_history(windmill_id: str, scale: str, windmill_config: dict) -> list[di
         bucket["_score"] = bucket.apply(_score, axis=1)
         rep = bucket.loc[bucket["_score"].idxmax()]
 
+        has_anomaly = bool(bucket["potential_anomaly"].fillna(False).any()) if "potential_anomaly" in bucket.columns else False
+        max_prob = bucket["anomaly_probability"].max() if "anomaly_probability" in bucket.columns else None
+
         result.append({
             "measurement_timestamp": rep["measurement_timestamp"].isoformat(),
             "temperature": float(rep["temperature"]),
             "noise_level": float(rep["noise_level"]),
             "humidity": float(rep["humidity"]),
             "wind_speed": float(rep["wind_speed"]),
+            "potential_anomaly": has_anomaly if has_anomaly else None,
+            "anomaly_probability": None if max_prob is None or pd.isna(max_prob) else float(max_prob),
         })
 
     return result

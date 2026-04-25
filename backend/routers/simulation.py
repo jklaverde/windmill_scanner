@@ -7,7 +7,7 @@ import asyncio
 from datetime import datetime, timezone
 
 from infra.db import SessionLocal
-from infra import windmill_repo, sensor_repo, location_repo
+from infra import windmill_repo, sensor_repo, location_repo, anomaly_client
 from infra.notifications import write as write_notification
 from domain import simulation
 from routers import ws_registry, task_registry
@@ -47,18 +47,35 @@ async def _sensor_loop(windmill_id: str, beat_seconds: int) -> None:
             task_registry.set_last_values(windmill_id, new_values)
             now = datetime.now(timezone.utc)
 
-            def _insert(values: dict, ts: datetime) -> None:
+            # Call ML service — temperature floor required by API (>= 0.0)
+            potential_anomaly: bool | None = None
+            anomaly_probability: float | None = None
+            try:
+                ml_result = await anomaly_client.predict(
+                    turbine_id=windmill_id,
+                    measurement_timestamp=now.strftime("%Y%m%d_%H%M%S"),
+                    temperature=max(0.0, new_values["temperature"]),
+                    humidity=new_values["humidity"],
+                    noise_level=new_values["noise_level"],
+                )
+                potential_anomaly = ml_result["potential_anomaly"]
+                anomaly_probability = ml_result["probability"]
+            except Exception:
+                pass  # ML down or error → store null, continue loop
+
+            def _insert(values: dict, ts: datetime, pa: bool | None, ap: float | None) -> None:
                 db2 = SessionLocal()
                 try:
                     sensor_repo.insert_reading(
                         db2, windmill_id, ts,
                         values["temperature"], values["noise_level"],
                         values["humidity"], values["wind_speed"],
+                        potential_anomaly=pa, anomaly_probability=ap,
                     )
                 finally:
                     db2.close()
 
-            await asyncio.to_thread(_insert, new_values, now)
+            await asyncio.to_thread(_insert, new_values, now, potential_anomaly, anomaly_probability)
 
             payload = {
                 "type": "reading",
@@ -71,6 +88,11 @@ async def _sensor_loop(windmill_id: str, beat_seconds: int) -> None:
                     "humidity":     {"value": new_values["humidity"],     "unit": "%RH"},
                     "wind_speed":   {"value": new_values["wind_speed"],   "unit": "km/h"},
                 },
+                "anomaly": (
+                    {"potential_anomaly": potential_anomaly, "probability": anomaly_probability}
+                    if potential_anomaly is not None
+                    else None
+                ),
             }
             await ws_registry.broadcast(windmill_id, payload)
 

@@ -70,6 +70,8 @@ class SensorReading(Base):
     noise_level = Column(Float, nullable=False)
     humidity = Column(Float, nullable=False)
     wind_speed = Column(Float, nullable=False)
+    potential_anomaly = Column(Boolean, nullable=True)
+    anomaly_probability = Column(Float, nullable=True)
 
 
 class LocationHeartbeat(Base):

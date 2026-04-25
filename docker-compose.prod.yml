@@ -15,18 +15,26 @@ services:
       timeout:  5s
       retries:  10
 
+  wind-turbine-assessment:
+    build: ../wind_turbine_assessment
+    expose:
+      - "8001"
+
   backend:
     build: ./backend
     environment:
-      DATABASE_URL:      postgresql://postgres:postgres@db:5432/windmill_scanner
-      PARQUET_DATA_PATH: /app/data/parquet
-      LOG_FILE_PATH:     /app/data/notifications.jsonl
-      CORS_ORIGINS:      http://localhost
+      DATABASE_URL:         postgresql://postgres:postgres@db:5432/windmill_scanner
+      PARQUET_DATA_PATH:    /app/data/parquet
+      LOG_FILE_PATH:        /app/data/notifications.jsonl
+      CORS_ORIGINS:         http://localhost
+      ANOMALY_SERVICE_URL:  http://wind-turbine-assessment:8001
     volumes:
       - app_data:/app/data
     depends_on:
       db:
         condition: service_healthy
+      wind-turbine-assessment:
+        condition: service_started
 
   frontend:
     build:

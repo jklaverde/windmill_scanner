@@ -9,6 +9,7 @@ import type {
   HistoryScale,
   YAxisMode,
   ModalState,
+  Windmill,
 } from "../domain/types";
 
 const MAX_BUFFER = 100;
@@ -38,6 +39,11 @@ interface StoreState {
   historyYAxisMode: YAxisMode;
   historyScale: HistoryScale;
 
+  // Anomaly state (in-memory; cleared by ETL success, seeded from API on load)
+  windmillAnomalyState: Record<string, boolean>;
+  farmAnomalyState: Record<number, boolean>;
+  windmillFarmMap: Record<string, number>;
+
   // Actions
   selectFarm: (id: number | null) => void;
   selectWindmill: (id: string | null) => void;
@@ -54,6 +60,10 @@ interface StoreState {
   setSignalsYAxisMode: (mode: YAxisMode) => void;
   setHistoryYAxisMode: (mode: YAxisMode) => void;
   setHistoryScale: (scale: HistoryScale) => void;
+  setWindmillAnomaly: (id: string, val: boolean) => void;
+  clearWindmillAnomaly: (id: string) => void;
+  seedWindmillAnomalyState: (windmills: Windmill[]) => void;
+  seedFarmAnomalyState: (farms: import("../domain/types").Farm[]) => void;
 }
 
 export const useStore = create<StoreState>((set) => ({
@@ -68,6 +78,9 @@ export const useStore = create<StoreState>((set) => ({
   signalsYAxisMode: "auto",
   historyYAxisMode: "auto",
   historyScale: "minute",
+  windmillAnomalyState: {},
+  farmAnomalyState: {},
+  windmillFarmMap: {},
 
   selectFarm: (id) =>
     set(() => ({
@@ -117,4 +130,70 @@ export const useStore = create<StoreState>((set) => ({
   setHistoryYAxisMode: (mode) => set({ historyYAxisMode: mode }),
 
   setHistoryScale: (scale) => set({ historyScale: scale }),
+
+  setWindmillAnomaly: (id, val) =>
+    set((s) => {
+      const nextWindmill = { ...s.windmillAnomalyState, [id]: val };
+      const farmId = s.windmillFarmMap[id];
+      const nextFarm = (farmId !== undefined && val)
+        ? { ...s.farmAnomalyState, [farmId]: true }
+        : s.farmAnomalyState;
+      return { windmillAnomalyState: nextWindmill, farmAnomalyState: nextFarm };
+    }),
+
+  clearWindmillAnomaly: (id) =>
+    set((s) => {
+      const nextWindmill = { ...s.windmillAnomalyState };
+      delete nextWindmill[id];
+      const farmId = s.windmillFarmMap[id];
+      const nextFarm = { ...s.farmAnomalyState };
+      if (farmId !== undefined) {
+        const anyLeft = Object.entries(s.windmillFarmMap).some(
+          ([wid, fid]) => fid === farmId && wid !== id && nextWindmill[wid],
+        );
+        if (!anyLeft) delete nextFarm[farmId];
+      }
+      return { windmillAnomalyState: nextWindmill, farmAnomalyState: nextFarm };
+    }),
+
+  seedWindmillAnomalyState: (windmills) =>
+    set((s) => {
+      const nextWindmill = { ...s.windmillAnomalyState };
+      const nextMap = { ...s.windmillFarmMap };
+      const nextFarm = { ...s.farmAnomalyState };
+      let farmId: number | null = null;
+      let farmHasAnomaly = false;
+      for (const wm of windmills) {
+        farmId = wm.farm_id;
+        nextMap[wm.windmill_id] = wm.farm_id;
+        if (wm.latest_anomaly === true) {
+          nextWindmill[wm.windmill_id] = true;
+          farmHasAnomaly = true;
+        } else {
+          if (!nextWindmill[wm.windmill_id]) {
+            delete nextWindmill[wm.windmill_id];
+          } else {
+            farmHasAnomaly = true;
+          }
+        }
+      }
+      if (farmId !== null) {
+        if (farmHasAnomaly) nextFarm[farmId] = true;
+        else delete nextFarm[farmId];
+      }
+      return { windmillAnomalyState: nextWindmill, windmillFarmMap: nextMap, farmAnomalyState: nextFarm };
+    }),
+
+  seedFarmAnomalyState: (farms) =>
+    set((s) => {
+      const nextFarm = { ...s.farmAnomalyState };
+      for (const farm of farms) {
+        if (farm.has_anomaly) {
+          nextFarm[farm.id] = true;
+        } else if (!nextFarm[farm.id]) {
+          delete nextFarm[farm.id];
+        }
+      }
+      return { farmAnomalyState: nextFarm };
+    }),
 }));

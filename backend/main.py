@@ -9,8 +9,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from infra.db import SessionLocal
-from infra import windmill_repo
-from routers import farms, windmills, parquet, notifications, websocket, sse
+from infra import windmill_repo, anomaly_client
+from routers import farms, windmills, parquet, notifications, websocket, sse, anomaly
 
 
 @asynccontextmanager
@@ -30,7 +30,8 @@ async def lifespan(app: FastAPI):
         db.close()
 
     yield
-    # Shutdown: nothing to clean up (tasks will be cancelled by Python)
+
+    await anomaly_client.close()
 
 
 app = FastAPI(
@@ -57,3 +58,4 @@ app.include_router(parquet.router)
 app.include_router(notifications.router)
 app.include_router(websocket.router)
 app.include_router(sse.router)
+app.include_router(anomaly.router)

@@ -1,4 +1,4 @@
-from sqlalchemy import func
+from sqlalchemy import func, text
 from sqlalchemy.orm import Session
 from domain.models import Farm, Windmill
 
@@ -12,12 +12,29 @@ def get_all(db: Session) -> list[dict]:
         rc = db.query(func.count(Windmill.id)).filter(
             Windmill.farm_id == farm.id, Windmill.is_running.is_(True)
         ).scalar() or 0
+        has_anomaly = db.execute(
+            text("""
+                SELECT EXISTS (
+                    SELECT 1 FROM (
+                        SELECT DISTINCT ON (sr.windmill_id)
+                            sr.potential_anomaly
+                        FROM sensor_readings sr
+                        JOIN windmills w ON w.windmill_id = sr.windmill_id
+                        WHERE w.farm_id = :fid
+                        ORDER BY sr.windmill_id, sr.measurement_timestamp DESC
+                    ) latest
+                    WHERE latest.potential_anomaly = true
+                )
+            """),
+            {"fid": farm.id},
+        ).scalar() or False
         result.append({
             "id": farm.id,
             "name": farm.name,
             "description": farm.description,
             "windmill_count": wc,
             "running_count": rc,
+            "has_anomaly": bool(has_anomaly),
             "created_at": farm.created_at,
         })
     return result

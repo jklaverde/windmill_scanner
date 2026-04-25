@@ -43,6 +43,12 @@ export default function SignalsChart() {
     signalsYAxisMode, setSignalsYAxisMode, selectWindmill,
   } = useStore();
 
+  const latestReading = signalsBuffer.length > 0 ? signalsBuffer[signalsBuffer.length - 1] : null;
+  const isAnomalyActive = wsStatus === "running" && latestReading?.potential_anomaly === true;
+  const anomalyPct = isAnomalyActive && latestReading?.anomaly_probability != null
+    ? Math.round(latestReading.anomaly_probability * 100)
+    : null;
+
   const { data: windmill } = useQuery<Windmill>({
     queryKey: ["windmill", selectedWindmillId],
     queryFn: () => api.get<Windmill>(`/windmills/${selectedWindmillId}`).then((r) => r.data),
@@ -88,9 +94,16 @@ export default function SignalsChart() {
   const lineStroke = (stopped || error) ? "#9ca3af" : undefined;
 
   return (
-    <div className="flex flex-col h-full bg-white p-2">
+    <div className={`flex flex-col h-full bg-white p-2 ${isAnomalyActive ? "ring-2 ring-red-500 animate-pulse" : ""}`}>
       <div className="flex items-center justify-between mb-1 shrink-0">
-        <span className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Signals (Real-Time)</span>
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Signals (Real-Time)</span>
+          {isAnomalyActive && anomalyPct !== null && (
+            <span className="text-xs font-semibold text-red-600 bg-red-50 px-1.5 py-0.5 rounded">
+              ⚠ {anomalyPct}%
+            </span>
+          )}
+        </div>
         <YAxisModeSelect mode={signalsYAxisMode} onChange={setSignalsYAxisMode} />
       </div>
 

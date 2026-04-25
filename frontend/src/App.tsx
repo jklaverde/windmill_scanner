@@ -32,6 +32,7 @@ export default function App() {
     addNotification,
     setSseConnected,
     wsStatus,
+    setWindmillAnomaly,
   } = useStore();
 
   // ── Seed notifications on mount ──────────────────────────────────────────
@@ -43,6 +44,25 @@ export default function App() {
   useEffect(() => {
     if (initialNotifications) seedNotifications(initialNotifications);
   }, [initialNotifications, seedNotifications]);
+
+  // ── ML health polling ─────────────────────────────────────────────────────
+  // Uses native fetch (not the axios instance) so failures are silent — no toast.
+  // Always resolves: returns { model_loaded: false } on any error or non-2xx.
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
+  const { data: mlHealth } = useQuery({
+    queryKey: ["anomaly-health"],
+    queryFn: async (): Promise<{ model_loaded: boolean }> => {
+      try {
+        const r = await fetch(`${BASE_URL}/anomaly/health`, { cache: "no-store" });
+        if (!r.ok) return { model_loaded: false };
+        return await r.json();
+      } catch {
+        return { model_loaded: false };
+      }
+    },
+    refetchInterval: 30_000,
+  });
+  const mlOk = mlHealth?.model_loaded === true;
 
   // ── SSE ───────────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -68,8 +88,13 @@ export default function App() {
               noise_level: msg.readings.noise_level.value,
               humidity: msg.readings.humidity.value,
               wind_speed: msg.readings.wind_speed.value,
+              potential_anomaly: msg.anomaly?.potential_anomaly ?? null,
+              anomaly_probability: msg.anomaly?.probability ?? null,
             };
             pushReading(r);
+            if (msg.anomaly?.potential_anomaly === true) {
+              setWindmillAnomaly(msg.windmill_id, true);
+            }
           } else if (msg.type === "status") {
             setWsStatus(msg.status === "started" ? "running" : "stopped");
           }
@@ -104,12 +129,22 @@ export default function App() {
           </svg>
           <span className="text-sm font-semibold tracking-wide">Wind Turbine Simulator (International University - IU)</span>
         </div>
-        <button
-          onClick={() => setShowAbout(true)}
-          className="text-xs text-slate-300 border border-slate-600 px-3 py-1 rounded hover:bg-slate-700 hover:text-white transition-colors"
-        >
-          About
-        </button>
+        <div className="flex items-center gap-2">
+          <span
+            className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+              mlOk ? "bg-green-700 text-green-100" : "bg-red-700 text-red-100"
+            }`}
+            title={mlOk ? "ML anomaly service is running." : "ML anomaly service is unreachable."}
+          >
+            {mlOk ? "ML OK" : "ML unreachable"}
+          </span>
+          <button
+            onClick={() => setShowAbout(true)}
+            className="text-xs text-slate-300 border border-slate-600 px-3 py-1 rounded hover:bg-slate-700 hover:text-white transition-colors"
+          >
+            About
+          </button>
+        </div>
       </header>
 
       {showAbout && <AboutModal onClose={() => setShowAbout(false)} />}

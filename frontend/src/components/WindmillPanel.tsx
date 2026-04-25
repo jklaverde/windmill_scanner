@@ -5,7 +5,7 @@
  * Control bar: Start / Stop / Edit / Delete / ETL.
  * Farm-level ETL button in panel header.
  */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "../infra/api";
 import type { Windmill, Farm } from "../domain/types";
@@ -20,10 +20,12 @@ import EditWindmillForm from "./EditWindmillForm";
 function WindmillRow({
   wm,
   selected,
+  hasAnomaly,
   onClick,
 }: {
   wm: Windmill;
   selected: boolean;
+  hasAnomaly: boolean;
   onClick: () => void;
 }) {
   return (
@@ -49,6 +51,14 @@ function WindmillRow({
         sensor: {formatBeat(wm.sensor_beat, wm.sensor_beat_unit)} &middot;
         loc: {formatBeat(wm.location_beat, wm.location_beat_unit)}
       </div>
+      {hasAnomaly && (
+        <div
+          className="text-xs text-red-600 font-medium mt-0.5"
+          title="Execute the ETL for this wind turbine to visualize the anomaly time frame in the historical chart."
+        >
+          Anomaly detected
+        </div>
+      )}
     </li>
   );
 }
@@ -63,11 +73,11 @@ export default function WindmillPanel() {
     selectedFarmId, selectedWindmillId, selectWindmill,
     openModal, closeModal, modalState,
     wasRunningBeforeEdit, setWasRunningBeforeEdit,
+    windmillAnomalyState, clearWindmillAnomaly, seedWindmillAnomalyState,
   } = useStore();
 
   const [mode, setMode] = useState<PanelMode>("list");
   const [farmEtlConfirm, setFarmEtlConfirm] = useState(false);
-  const [windmillEtlConfirm, setWindmillEtlConfirm] = useState(false);
 
   // Farms (for name display in header/form)
   const { data: farms } = useQuery<Farm[]>({ queryKey: ["farms"], queryFn: () => api.get<Farm[]>("/farms").then((r) => r.data) });
@@ -80,6 +90,11 @@ export default function WindmillPanel() {
     enabled: !!selectedFarmId,
   });
   const selectedWindmill = windmills?.find((w) => w.windmill_id === selectedWindmillId);
+
+  // Seed anomaly state from API on load / refetch
+  useEffect(() => {
+    if (windmills) seedWindmillAnomalyState(windmills);
+  }, [windmills, seedWindmillAnomalyState]);
 
   // Control mutations
   const startMutation = useMutation({
@@ -95,6 +110,7 @@ export default function WindmillPanel() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["windmills", selectedFarmId] });
       qc.invalidateQueries({ queryKey: ["farms"] });
+      qc.invalidateQueries({ queryKey: ["parquet-files"] });
     },
   });
 
@@ -110,18 +126,20 @@ export default function WindmillPanel() {
 
   const etlMutation = useMutation({
     mutationFn: (id: string) => api.post(`/windmills/${id}/etl`),
-    onSuccess: () => {
+    onSuccess: (_data, id) => {
       qc.invalidateQueries({ queryKey: ["history", selectedWindmillId] });
       qc.invalidateQueries({ queryKey: ["parquet-files"] });
-      setWindmillEtlConfirm(false);
+      clearWindmillAnomaly(id);
     },
   });
 
   const farmEtlMutation = useMutation({
-    mutationFn: (farmId: number) => api.post(`/farms/${farmId}/etl`),
-    onSuccess: () => {
+    mutationFn: (farmId: number) =>
+      api.post<{ succeeded: string[]; errors: unknown[] }>(`/farms/${farmId}/etl`).then((r) => r.data),
+    onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: ["history"] });
       qc.invalidateQueries({ queryKey: ["parquet-files"] });
+      for (const id of data.succeeded) clearWindmillAnomaly(id);
       setFarmEtlConfirm(false);
     },
   });
@@ -228,6 +246,7 @@ export default function WindmillPanel() {
                 key={wm.windmill_id}
                 wm={wm}
                 selected={wm.windmill_id === selectedWindmillId}
+                hasAnomaly={!!windmillAnomalyState[wm.windmill_id]}
                 onClick={() => {
                   if (wm.windmill_id !== selectedWindmillId) selectWindmill(wm.windmill_id);
                 }}
@@ -282,7 +301,7 @@ export default function WindmillPanel() {
               ? `Move signals for this wind turbine from the database to its parquet (archive) file.`
               : ""
           }
-          onClick={() => setWindmillEtlConfirm(true)}
+          onClick={() => selectedWindmill && etlMutation.mutate(selectedWindmill.windmill_id)}
           className="flex-1 text-xs py-1.5 border border-gray-300 rounded disabled:opacity-40 hover:bg-gray-100"
         >
           {etlMutation.isPending ? "…" : "ETL"}
@@ -300,19 +319,6 @@ export default function WindmillPanel() {
           destructive
           onConfirm={() => deleteMutation.mutate(modalState.payload.id)}
           onCancel={closeModal}
-        />
-      )}
-
-      {/* ETL windmill dialog */}
-      {windmillEtlConfirm && selectedWindmill && (
-        <ConfirmDialog
-          open
-          title={`Run ETL for ${selectedWindmill.name}?`}
-          body="This will archive all new sensor readings for this wind turbine to the Parquet file."
-          confirmLabel="Archive"
-          cancelLabel="Cancel"
-          onConfirm={() => etlMutation.mutate(selectedWindmill.windmill_id)}
-          onCancel={() => setWindmillEtlConfirm(false)}
         />
       )}
 

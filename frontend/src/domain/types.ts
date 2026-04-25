@@ -6,6 +6,7 @@ export interface Farm {
   description: string;
   windmill_count: number;
   running_count: number;
+  has_anomaly: boolean;
   created_at: string;
 }
 
@@ -45,6 +46,7 @@ export interface Windmill {
   humidity_rate: number;
   wind_rate: number;
   created_at: string;
+  latest_anomaly: boolean | null;
 }
 
 export type BeatUnit = "ss" | "mm" | "hh" | "dd";
@@ -57,6 +59,8 @@ export interface SensorReading {
   noise_level: number;
   humidity: number;
   wind_speed: number;
+  potential_anomaly?: boolean | null;
+  anomaly_probability?: number | null;
 }
 
 export interface WsReading {
@@ -70,6 +74,7 @@ export interface WsReading {
     humidity: { value: number; unit: string };
     wind_speed: { value: number; unit: string };
   };
+  anomaly: { potential_anomaly: boolean; probability: number } | null;
 }
 
 export interface WsStatus {
