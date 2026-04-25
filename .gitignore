@@ -44,6 +44,10 @@ yarn-error.log*
 *.p12
 *.pfx
 
+# ── Design & internal docs ────────────────────────────────────────────────────
+docs/context.md
+docs/questions_answers.md
+
 # ── OS & editor noise ─────────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
