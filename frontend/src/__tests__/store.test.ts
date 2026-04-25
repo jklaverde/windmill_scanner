@@ -2,18 +2,21 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { useStore } from '../store/useStore';
 import type { SensorReading, NotificationEntry } from '../domain/types';
 
-const INITIAL: Parameters<typeof useStore.setState>[0] = {
-  selectedFarmId: null,
-  selectedWindmillId: null,
-  signalsBuffer: [],
-  wsStatus: 'idle',
-  notifications: [],
+const INITIAL = {
+  selectedFarmId: null as number | null,
+  selectedWindmillId: null as string | null,
+  signalsBuffer: [] as SensorReading[],
+  wsStatus: 'idle' as const,
+  notifications: [] as NotificationEntry[],
   sseConnected: false,
   modalState: null,
   wasRunningBeforeEdit: false,
-  signalsYAxisMode: 'auto',
-  historyYAxisMode: 'auto',
-  historyScale: 'minute',
+  signalsYAxisMode: 'auto' as const,
+  historyYAxisMode: 'auto' as const,
+  historyScale: 'minute' as const,
+  windmillAnomalyState: {} as Record<string, boolean>,
+  farmAnomalyState: {} as Record<number, boolean>,
+  windmillFarmMap: {} as Record<string, number>,
 };
 
 beforeEach(() => {

@@ -3,7 +3,7 @@
  *
  * All fields pre-filled with defaults. Discard confirmation if any field changed.
  */
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "../infra/api";
 import type { BeatUnit, LatDir, LonDir } from "../domain/types";

@@ -19,11 +19,13 @@ export class WindmillWebSocket {
   private windmillId: string = "";
   private attempts = 0;
   private destroyed = false;
+  private readonly onMessage: WsCallback;
+  private readonly onStatusChange: WsStatusCallback;
 
-  constructor(
-    private readonly onMessage: WsCallback,
-    private readonly onStatusChange: WsStatusCallback,
-  ) {}
+  constructor(onMessage: WsCallback, onStatusChange: WsStatusCallback) {
+    this.onMessage = onMessage;
+    this.onStatusChange = onStatusChange;
+  }
 
   /** Open a connection for windmill_id. Resets any prior state. */
   connect(windmillId: string): void {

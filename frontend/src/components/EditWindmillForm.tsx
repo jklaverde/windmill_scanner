@@ -8,16 +8,15 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "../infra/api";
-import type { Windmill, BeatUnit, LatDir, LonDir } from "../domain/types";
+import type { Windmill, BeatUnit } from "../domain/types";
 import ConfirmDialog from "./ConfirmDialog";
-import { useStore } from "../store/useStore";
 
 interface Props {
   windmillId: string;
   onClose: (restart: boolean) => void;
 }
 
-type FormData = Omit<Windmill, "id" | "windmill_id" | "farm_id" | "is_running" | "created_at">;
+type FormData = Omit<Windmill, "id" | "windmill_id" | "farm_id" | "is_running" | "created_at" | "latest_anomaly">;
 
 function toFormData(wm: Windmill): FormData {
   return {
@@ -38,7 +37,6 @@ export default function EditWindmillForm({ windmillId, onClose }: Props) {
   const [form, setForm] = useState<FormData | null>(null);
   const [original, setOriginal] = useState<FormData | null>(null);
   const [showDiscard, setShowDiscard] = useState(false);
-  const wasRunningBeforeEdit = useStore((s) => s.wasRunningBeforeEdit);
 
   const { data: windmill } = useQuery<Windmill>({
     queryKey: ["windmill", windmillId],

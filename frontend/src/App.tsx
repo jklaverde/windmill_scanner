@@ -31,7 +31,6 @@ export default function App() {
     seedNotifications,
     addNotification,
     setSseConnected,
-    wsStatus,
     setWindmillAnomaly,
   } = useStore();
 

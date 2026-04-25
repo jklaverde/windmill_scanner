@@ -13,11 +13,13 @@ export type SseConnectionCallback = (connected: boolean) => void;
 
 export class NotificationSSE {
   private es: EventSource | null = null;
+  private readonly onEntry: SseEntryCallback;
+  private readonly onConnectionChange: SseConnectionCallback;
 
-  constructor(
-    private readonly onEntry: SseEntryCallback,
-    private readonly onConnectionChange: SseConnectionCallback,
-  ) {}
+  constructor(onEntry: SseEntryCallback, onConnectionChange: SseConnectionCallback) {
+    this.onEntry = onEntry;
+    this.onConnectionChange = onConnectionChange;
+  }
 
   /** Open the SSE stream. Reconnects automatically via browser EventSource. */
   connect(): void {
