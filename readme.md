@@ -336,11 +336,11 @@ Select a windmill to populate the History chart (bottom-right). Use the **minute
 
 ### 7 — Archive data (ETL)
 
-Click **ETL** on a selected windmill to transfer its sensor readings — including anomaly results — from PostgreSQL to a Parquet file. The Parquet Files panel (right) lists all archives with their size and data time range.
+Click **ETL** on a selected windmill to transfer its sensor readings — including anomaly results — from PostgreSQL to a Parquet file. ETL runs immediately with no confirmation dialog. The Parquet Files panel (right) lists all archives with their size and data time range.
 
-Click **Farm ETL** in the Windmill Management header to archive all windmills in the current farm at once.
+Click **Farm ETL** in the Windmill Management header to archive all windmills in the current farm at once (a confirmation dialog is shown before the farm-level ETL runs).
 
-Running ETL clears the **Anomaly detected** indicator for that windmill (see below).
+Running ETL clears the **Anomaly detected** indicator for that windmill and, if no other windmill in the farm has an active anomaly, also clears the farm-level indicator (see below).
 
 ### 8 — Respond to anomaly alerts
 
@@ -379,6 +379,7 @@ If the ML service is unreachable or returns an error:
 | Location | Indicator | Cleared by |
 |---|---|---|
 | Title bar | `ML OK` / `ML unreachable` badge | Automatic (30 s polling) |
+| Farm list row | "Anomaly detected" text | Running ETL for any anomalous windmill in the farm |
 | Windmill list row | "Anomaly detected" text + tooltip | Running ETL for that windmill |
 | Signals chart | Pulsing red border + `⚠ XX%` badge | Next clean reading or stream stop |
 | History chart | Red dashed vertical lines at anomaly timestamps | N/A — historical record |
@@ -416,6 +417,8 @@ next  = clamp(current + delta, clamp_min, spike_max)
 **ETL is incremental:** it reads only rows newer than the latest timestamp already in the Parquet file, appends them (including anomaly columns), and overwrites the file. Running ETL repeatedly on the same windmill is safe.
 
 **Parquet columns written:** `measurement_timestamp`, `temperature`, `noise_level`, `humidity`, `wind_speed`, `potential_anomaly`, `anomaly_probability`.
+
+**Deleting Parquet files:** the delete button in the Parquet Files panel is enabled as soon as the windmill is stopped. Stopping a windmill individually or stopping all windmills in a farm immediately unlocks deletion — no page refresh is required.
 
 > If you deploy the ML integration for the first time on an existing instance, delete all existing Parquet files and re-run ETL. Old files do not have the anomaly columns and must be regenerated.
 
